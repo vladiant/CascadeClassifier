@@ -9,6 +9,8 @@ Haar Cascade Classifier implementation and tools
 
 * [OpenCV 3.4 Docker image](https://hub.docker.com/r/spmallick/opencv-docker)
 
+* [Youtube : Training a Cascade Classifier ](https://www.youtube.com/watch?v=XrCAvs9AePM)
+
 * [Training of OpenCV Haar feature classifier in Ubuntu](https://developpaper.com/training-of-opencv-haar-feature-classifier-in-ubuntu/)
 
 * [Training your own Cascade/Classifier/Detector — OpenCV](https://dikshit18.medium.com/training-your-own-cascade-classifier-detector-opencv-9ea6055242c2)
