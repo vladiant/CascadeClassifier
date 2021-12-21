@@ -2,60 +2,8 @@
 
 #include <opencv2/core/core_c.h>
 
-// CvCascadeBoostParams
-struct CvDTreeParams
-{
-    int   max_categories;
-    int   max_depth;
-    int   min_sample_count;
-    int   cv_folds;
-    bool  use_surrogates;
-    bool  use_1se_rule;
-    bool  truncate_pruned_tree;
-    float regression_accuracy;
-    const float* priors;
-
-    CvDTreeParams();
-    CvDTreeParams( int max_depth, int min_sample_count,
-                   float regression_accuracy, bool use_surrogates,
-                   int max_categories, int cv_folds,
-                   bool use_1se_rule, bool truncate_pruned_tree,
-                   const float* priors );
-};
-
-
-// CvCascadeBoostParams
-struct CvBoostParams : public CvDTreeParams
-{
-    int boost_type;
-    int weak_count;
-    int split_criteria;
-    double weight_trim_rate;
-
-    CvBoostParams();
-    CvBoostParams( int boost_type, int weak_count, double weight_trim_rate,
-                   int max_depth, bool use_surrogates, const float* priors );
-};
-
-// CvCascadeBoost
-class CvStatModel
-{
-public:
-    CvStatModel();
-    virtual ~CvStatModel();
-
-    virtual void clear();
-
-    // CV_WRAP virtual void save( const char* filename, const char* name=0 ) const;
-    // CV_WRAP virtual void load( const char* filename, const char* name=0 );
-
-    // virtual void write( cv::FileStorage& storage, const char* name ) const;
-    // virtual void read( const cv::FileNode& node );
-
-protected:
-    const char* default_model_name;
-};
-
+#include "o_cvboostparams.h"
+#include "o_cvstatmodel.h"
 
 // CvCascadeBoost
 class CvBoost : public CvStatModel

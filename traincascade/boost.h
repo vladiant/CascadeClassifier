@@ -3,8 +3,11 @@
 
 #include <opencv2/core/types_c.h>
 
+#include "o_cvboost.h"
+#include "o_cvboostparams.h"
+
 #include "traincascade_features.h"
-#include "utils.h"
+
 
 // CvCascadeBoostParams <- CvBoostParams <- CvCascadeBoostParams
 struct CvCascadeBoostParams : CvBoostParams

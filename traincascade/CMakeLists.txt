@@ -6,8 +6,14 @@ find_package(OpenCV REQUIRED)
 
 add_executable(
     ${PROJECT_NAME}
-    utils.h
-    utils.cpp
+    o_cvdtreeparams.h
+    o_cvdtreeparams.cpp
+    o_cvboostparams.h
+    o_cvboostparams.cpp
+    o_cvstatmodel.h
+    o_cvstatmodel.cpp
+    o_cvboost.h
+    o_cvboost.cpp
     boost.h
     boost.cpp
     cascadeclassifier.h

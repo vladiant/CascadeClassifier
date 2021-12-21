@@ -2,8 +2,6 @@
 #include <opencv2/core/utility.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#include "utils.h"
-
 using cv::Size;
 using cv::Mat;
 using cv::Point;
