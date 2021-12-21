@@ -4,26 +4,11 @@
 #include <opencv2/core/types_c.h>
 
 #include "traincascade_features.h"
+#include "utils.h"
 
-struct CvCascadeBoostParams
+// CvCascadeBoostParams <- CvBoostParams <- CvCascadeBoostParams
+struct CvCascadeBoostParams : CvBoostParams
 {
-    // CvDTreeParams
-    int   max_categories;
-    int   max_depth;
-    int   min_sample_count;
-    int   cv_folds;
-    bool  use_surrogates;
-    bool  use_1se_rule;
-    bool  truncate_pruned_tree;
-    float regression_accuracy;
-    const float* priors;
-
-    // CvBoostParams
-    int boost_type;
-    int weak_count;
-    int split_criteria;
-    double weight_trim_rate;
-
     float minHitRate;
     float maxFalseAlarm;
 
@@ -38,15 +23,10 @@ struct CvCascadeBoostParams
     virtual bool scanAttr( const std::string prmName, const std::string val);
 };
 
-class CvCascadeBoost
+// CvCascadeBoost <- CvBoost <- CvStatModel
+class CvCascadeBoost : public CvBoost
 {
 public:
-    // CvBoost
-    CvSeq* get_weak_predictors()
-    {
-        return weak;
-    }
-
     bool train( const CvFeatureEvaluator* _featureEvaluator,
                 int _numSamples, int _precalcValBufSize, int _precalcIdxBufSize,
                 const CvCascadeBoostParams& _params=CvCascadeBoostParams() );
@@ -59,9 +39,6 @@ public:
     void markUsedFeaturesInMap( cv::Mat& featureMap );
 private:
     bool isErrDesired();
-
-    // CvBoost
-    CvSeq* weak;
 
     float threshold;
     float minHitRate, maxFalseAlarm;

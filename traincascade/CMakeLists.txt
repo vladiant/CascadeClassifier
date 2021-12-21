@@ -6,6 +6,8 @@ find_package(OpenCV REQUIRED)
 
 add_executable(
     ${PROJECT_NAME}
+    utils.h
+    utils.cpp
     boost.h
     boost.cpp
     cascadeclassifier.h

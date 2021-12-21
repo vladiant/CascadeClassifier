@@ -2,6 +2,8 @@
 #include <opencv2/core/utility.hpp>
 #include <opencv2/ml/ml.hpp>
 
+#include "utils.h"
+
 using cv::Size;
 using cv::Mat;
 using cv::Point;
@@ -68,38 +70,15 @@ static const int BlockSizeDelta = 1 << 10;
 
 CvCascadeBoostParams::CvCascadeBoostParams() : minHitRate( 0.995F), maxFalseAlarm( 0.5F )
 {
-    // CvDTreeParams
-    cv_folds = 10;
-    use_surrogates = true;
-    use_1se_rule = true;
-    truncate_pruned_tree = true;
-    regression_accuracy = 0.01f;
-    priors = nullptr;
-
-    // CvBoostParams
-    boost_type = cv::ml::Boost::REAL;
-    weak_count = 100;
-    weight_trim_rate = 0.95;
-    cv_folds = 0;
-    max_depth = 1;
-
     boost_type = cv::ml::Boost::GENTLE;
     use_surrogates = use_1se_rule = truncate_pruned_tree = false;
 }
 
 CvCascadeBoostParams::CvCascadeBoostParams( int _boostType,
         float _minHitRate, float _maxFalseAlarm,
-        double _weightTrimRate, int _maxDepth, int _maxWeakCount )
+        double _weightTrimRate, int _maxDepth, int _maxWeakCount ) :
+    CvBoostParams( _boostType, _maxWeakCount, _weightTrimRate, _maxDepth, false, 0 )
 {
-    // CvBoostParams
-    boost_type = _boostType;
-    weak_count = _maxWeakCount;
-    weight_trim_rate = _weightTrimRate;
-    cv_folds = 0;
-    max_depth = _maxDepth;
-    use_surrogates = false;
-    priors = nullptr;
-
     boost_type = cv::ml::Boost::GENTLE;
     minHitRate = _minHitRate;
     maxFalseAlarm = _maxFalseAlarm;
