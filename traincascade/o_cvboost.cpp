@@ -3,6 +3,7 @@
 #include <opencv2/ml/ml.hpp>
 
 #include "o_cvdtreeparams.h"
+#include "o_cvboostree.h"
 
 
 CvBoost::CvBoost()
@@ -30,12 +31,12 @@ void CvBoost::prune( CvSlice slice )
 
         static_cast<void>(i);
         static_cast<void>(count);
-        // for( i = 0; i < count; i++ )
-        // {
-        //     CvBoostTree* w;
-        //     CV_READ_SEQ_ELEM( w, reader );
-        //     delete w;
-        // }
+        for( i = 0; i < count; i++ )
+        {
+            CvBoostTree* w;
+            CV_READ_SEQ_ELEM( w, reader );
+            delete w;
+        }
 
         cvSeqRemoveSlice( weak, slice );
     }
@@ -73,4 +74,28 @@ CvBoost::~CvBoost()
 CvSeq* CvBoost::get_weak_predictors()
 {
     return weak;
+}
+
+CvMat*
+CvBoost::get_weak_response()
+{
+    return weak_eval;
+}
+
+CvMat*
+CvBoost::get_subtree_weights()
+{
+    return subtree_weights;
+}
+
+const CvBoostParams&
+CvBoost::get_params() const
+{
+    return params;
+}
+
+CvMat*
+CvBoost::get_weights()
+{
+    return weights;
 }

@@ -2,6 +2,7 @@
 
 #include <opencv2/ml/ml.hpp>
 
+// TODO: Extract these in a separate file!
 #define CV_VAR_NUMERICAL    0
 #define CV_VAR_ORDERED      0
 #define CV_VAR_CATEGORICAL  1

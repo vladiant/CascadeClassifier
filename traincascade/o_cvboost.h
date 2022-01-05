@@ -69,10 +69,10 @@ public:
 
     CvSeq* get_weak_predictors();
 
-    // CvMat* get_weights();
-    // CvMat* get_subtree_weights();
-    // CvMat* get_weak_response();
-    // const CvBoostParams& get_params() const;
+    CvMat* get_weights();
+    CvMat* get_subtree_weights();
+    CvMat* get_weak_response();
+    const CvBoostParams& get_params() const;
     // const CvDTreeTrainData* get_data() const;
 
 protected:

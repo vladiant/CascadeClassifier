@@ -18,6 +18,11 @@ add_executable(
     o_cvdtreenode.h
     o_cvdtreetraindata.h
     o_cvdtreetraindata.cpp
+    o_blockedrange.h
+    o_cvdtree.h
+    o_cvdtree.cpp
+    o_cvboostree.h
+    o_cvboostree.cpp
     boost.h
     boost.cpp
     cascadeclassifier.h
