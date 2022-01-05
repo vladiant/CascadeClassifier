@@ -14,6 +14,10 @@ add_executable(
     o_cvstatmodel.cpp
     o_cvboost.h
     o_cvboost.cpp
+    o_cvdtreesplit.h
+    o_cvdtreenode.h
+    o_cvdtreetraindata.h
+    o_cvdtreetraindata.cpp
     boost.h
     boost.cpp
     cascadeclassifier.h

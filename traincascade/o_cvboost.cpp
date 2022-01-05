@@ -7,8 +7,8 @@
 
 CvBoost::CvBoost()
 {
-    // data = 0;
-    weak = 0;
+    data = nullptr;
+    weak = nullptr;
     default_model_name = "my_boost_tree";
 
     active_vars = active_vars_abs = orig_response = sum_response = weak_eval =
@@ -49,10 +49,10 @@ void CvBoost::clear()
         prune( CV_WHOLE_SEQ );
         cvReleaseMemStorage( &weak->storage );
     }
-    // if( data )
-    //     delete data;
-    weak = 0;
-    // data = 0;
+    if( data )
+        delete data;
+    weak = nullptr;
+    data = nullptr;
     cvReleaseMat( &active_vars );
     cvReleaseMat( &active_vars_abs );
     cvReleaseMat( &orig_response );

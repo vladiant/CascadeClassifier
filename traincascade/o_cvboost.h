@@ -4,6 +4,7 @@
 
 #include "o_cvboostparams.h"
 #include "o_cvstatmodel.h"
+#include "o_cvdtreetraindata.h"
 
 // CvCascadeBoost
 class CvBoost : public CvStatModel
@@ -84,7 +85,7 @@ protected:
 
     // virtual void initialize_weights(double (&p)[2]);
 
-    // CvDTreeTrainData* data;
+    CvDTreeTrainData* data;
     CvMat train_data_hdr, responses_hdr;
     cv::Mat train_data_mat, responses_mat;
     CvBoostParams params;
