@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/core_c.h>
 
@@ -60,14 +62,14 @@ public:
 protected:
     struct DTreeBestSplitFinder
     {
-        DTreeBestSplitFinder(){ splitSize = 0, tree = 0; node = 0; }
+        // DTreeBestSplitFinder(){ splitSize = 0, tree = 0; node = 0; }
         DTreeBestSplitFinder( CvDTree* _tree, CvDTreeNode* _node);
         // DTreeBestSplitFinder( const DTreeBestSplitFinder& finder, Split );
         // virtual ~DTreeBestSplitFinder() {}
         void operator()(const BlockedRange& range);
         void join( DTreeBestSplitFinder& rhs );
-        cv::Ptr<CvDTreeSplit> bestSplit;
-        cv::Ptr<CvDTreeSplit> split;
+        std::shared_ptr<CvDTreeSplit> bestSplit;
+        std::shared_ptr<CvDTreeSplit> split;
         int splitSize;
         CvDTree* tree;
         CvDTreeNode* node;

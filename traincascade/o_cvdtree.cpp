@@ -375,17 +375,22 @@ double CvDTree::calc_node_dir( CvDTreeNode* node )
     return node->split->quality/(L + R);
 }
 
+void deleter(CvDTreeSplit* ptr)
+{
+    cv::fastFree(ptr);
+}
+
 CvDTree::DTreeBestSplitFinder::DTreeBestSplitFinder( CvDTree* _tree, CvDTreeNode* _node)
 {
     tree = _tree;
     node = _node;
     splitSize = tree->get_data()->split_heap->elem_size;
 
-    bestSplit.reset((CvDTreeSplit*)cv::fastMalloc(splitSize));
+    bestSplit.reset((CvDTreeSplit*)cv::fastMalloc(splitSize), deleter);
     memset(bestSplit.get(), 0, splitSize);
     bestSplit->quality = -1;
     bestSplit->condensed_idx = INT_MIN;
-    split.reset((CvDTreeSplit*)cv::fastMalloc(splitSize));
+    split.reset((CvDTreeSplit*)cv::fastMalloc(splitSize), deleter);
     memset(split.get(), 0, splitSize);
     //haveSplit = false;
 }
@@ -419,16 +424,16 @@ void CvDTree::DTreeBestSplitFinder::operator()(const BlockedRange& range)
         if( data->is_classifier )
         {
             if( ci >= 0 )
-                res = tree->find_split_cat_class( node, vi, bestSplit->quality, split, inn_buf.data() );
+                res = tree->find_split_cat_class( node, vi, bestSplit->quality, split.get(), inn_buf.data() );
             else
-                res = tree->find_split_ord_class( node, vi, bestSplit->quality, split, inn_buf.data() );
+                res = tree->find_split_ord_class( node, vi, bestSplit->quality, split.get(), inn_buf.data() );
         }
         else
         {
             if( ci >= 0 )
-                res = tree->find_split_cat_reg( node, vi, bestSplit->quality, split, inn_buf.data() );
+                res = tree->find_split_cat_reg( node, vi, bestSplit->quality, split.get(), inn_buf.data() );
             else
-                res = tree->find_split_ord_reg( node, vi, bestSplit->quality, split, inn_buf.data() );
+                res = tree->find_split_ord_reg( node, vi, bestSplit->quality, split.get(), inn_buf.data() );
         }
 
         if( res && bestSplit->quality < split->quality )
@@ -452,7 +457,7 @@ CvDTreeSplit* CvDTree::find_best_split( CvDTreeNode* node )
     if( finder.bestSplit->quality > 0 )
     {
         bestSplit = data->new_split_cat( 0, -1.0f );
-        memcpy( bestSplit, finder.bestSplit, finder.splitSize );
+        memcpy( bestSplit, finder.bestSplit.get(), finder.splitSize );
     }
 
     return bestSplit;
