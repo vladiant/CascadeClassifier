@@ -5,6 +5,10 @@
 #include "o_cvdtreeparams.h"
 #include "o_cvboostree.h"
 
+// TODO: Duplicated
+#define __BEGIN__ __CV_BEGIN__
+#define __END__  __CV_END__
+#define EXIT __CV_EXIT__
 
 CvBoost::CvBoost()
 {
@@ -74,6 +78,88 @@ CvBoost::~CvBoost()
 CvSeq* CvBoost::get_weak_predictors()
 {
     return weak;
+}
+
+bool
+CvBoost::set_params( const CvBoostParams& _params )
+{
+    bool ok = false;
+
+    CV_FUNCNAME( "CvBoost::set_params" );
+
+    __BEGIN__;
+
+    params = _params;
+    if( params.boost_type != DISCRETE && params.boost_type != REAL &&
+        params.boost_type != LOGIT && params.boost_type != GENTLE )
+        CV_ERROR( cv::Error::StsBadArg, "Unknown/unsupported boosting type" );
+
+    params.weak_count = MAX( params.weak_count, 1 );
+    params.weight_trim_rate = MAX( params.weight_trim_rate, 0. );
+    params.weight_trim_rate = MIN( params.weight_trim_rate, 1. );
+    if( params.weight_trim_rate < FLT_EPSILON )
+        params.weight_trim_rate = 1.f;
+
+    if( params.boost_type == DISCRETE &&
+        params.split_criteria != GINI && params.split_criteria != MISCLASS )
+        params.split_criteria = MISCLASS;
+    if( params.boost_type == REAL &&
+        params.split_criteria != GINI && params.split_criteria != MISCLASS )
+        params.split_criteria = GINI;
+    if( (params.boost_type == LOGIT || params.boost_type == GENTLE) &&
+        params.split_criteria != SQERR )
+        params.split_criteria = SQERR;
+
+    ok = true;
+
+    __END__;
+
+    return ok;
+}
+
+void
+CvBoost::trim_weights()
+{
+    //CV_FUNCNAME( "CvBoost::trim_weights" );
+
+    __BEGIN__;
+
+    int i, count = data->sample_count, nz_count = 0;
+    double sum, threshold;
+
+    if( params.weight_trim_rate <= 0. || params.weight_trim_rate >= 1. )
+        EXIT;
+
+    // use weak_eval as temporary buffer for sorted weights
+    cvCopy( weights, weak_eval );
+
+    std::sort(weak_eval->data.db, weak_eval->data.db + count);
+
+    // as weight trimming occurs immediately after updating the weights,
+    // where they are renormalized, we assume that the weight sum = 1.
+    sum = 1. - params.weight_trim_rate;
+
+    for( i = 0; i < count; i++ )
+    {
+        double w = weak_eval->data.db[i];
+        if( sum <= 0 )
+            break;
+        sum -= w;
+    }
+
+    threshold = i < count ? weak_eval->data.db[i] : DBL_MAX;
+
+    for( i = 0; i < count; i++ )
+    {
+        double w = weights->data.db[i];
+        int f = w >= threshold;
+        subsample_mask->data.ptr[i] = (uchar)f;
+        nz_count += f;
+    }
+
+    have_subsample = nz_count < count;
+
+    __END__;
 }
 
 CvMat*

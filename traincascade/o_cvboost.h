@@ -77,9 +77,9 @@ public:
 
 protected:
 
-    // virtual bool set_params( const CvBoostParams& params );
+    virtual bool set_params( const CvBoostParams& params );
     // virtual void update_weights( CvBoostTree* tree );
-    // virtual void trim_weights();
+    virtual void trim_weights();
     // virtual void write_params( CvFileStorage* fs ) const;
     // virtual void read_params( CvFileStorage* fs, CvFileNode* node );
 

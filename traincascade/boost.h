@@ -5,6 +5,7 @@
 
 #include "o_cvboost.h"
 #include "o_cvboostparams.h"
+#include "o_cvboostree.h"
 
 #include "traincascade_features.h"
 
@@ -42,6 +43,8 @@ public:
     void markUsedFeaturesInMap( cv::Mat& featureMap );
 private:
     bool isErrDesired();
+    bool set_params( const CvBoostParams& _params ) override;
+    void update_weights( CvBoostTree* tree );// override;
 
     float threshold;
     float minHitRate, maxFalseAlarm;

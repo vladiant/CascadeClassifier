@@ -23,6 +23,10 @@ add_executable(
     o_cvdtree.cpp
     o_cvboostree.h
     o_cvboostree.cpp
+    o_cvcascadeboosttraindata.h
+    o_cvcascadeboosttraindata.cpp
+    o_cvcascadeboosttree.h
+    o_cvcascadeboosttree.cpp
     boost.h
     boost.cpp
     cascadeclassifier.h

@@ -7,6 +7,7 @@
 #define CV_VAR_ORDERED      0
 #define CV_VAR_CATEGORICAL  1
 
+// TODO: Duplicated
 #define __BEGIN__ __CV_BEGIN__
 #define __END__  __CV_END__
 #define EXIT __CV_EXIT__
@@ -15,6 +16,7 @@ static const float ord_nan = FLT_MAX*0.5f;
 static const int min_block_size = 1 << 16;
 static const int block_size_delta = 1 << 10;
 
+// TODO: Duplicated
 static inline int cvAlign( int size, int align )
 {
     CV_DbgAssert( (align & (align-1)) == 0 && size < INT_MAX );
@@ -67,7 +69,7 @@ cvCheckTrainData( const CvMat* train_data, int tflag,
 }
 
 CvMat*
-cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, bool check_for_duplicates=false )
+cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, bool check_for_duplicates)
 {
     CvMat* idx = 0;
 
@@ -248,6 +250,7 @@ public:
     bool operator()(T* a, T* b) const { return *a < *b; }
 };
 
+// TODO: Duplicated
 template<typename T, typename Idx>
 class LessThanIdx
 {

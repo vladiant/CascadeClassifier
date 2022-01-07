@@ -63,8 +63,8 @@ protected:
         DTreeBestSplitFinder(){ splitSize = 0, tree = 0; node = 0; }
         DTreeBestSplitFinder( CvDTree* _tree, CvDTreeNode* _node);
         // DTreeBestSplitFinder( const DTreeBestSplitFinder& finder, Split );
-        virtual ~DTreeBestSplitFinder() {}
-        virtual void operator()(const BlockedRange& range);
+        // virtual ~DTreeBestSplitFinder() {}
+        void operator()(const BlockedRange& range);
         void join( DTreeBestSplitFinder& rhs );
         cv::Ptr<CvDTreeSplit> bestSplit;
         cv::Ptr<CvDTreeSplit> split;
