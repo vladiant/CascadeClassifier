@@ -24,11 +24,6 @@ public:
                         const CvMat* missingDataMask=0,
                         CvDTreeParams params=CvDTreeParams() );
 
-    // virtual bool train( CvMLData* trainData, CvDTreeParams params=CvDTreeParams() );
-
-    // type in {CV_TRAIN_ERROR, CV_TEST_ERROR}
-    // virtual float calc_error( CvMLData* trainData, int type, std::vector<float> *resp = 0 );
-
     virtual bool train( CvDTreeTrainData* trainData, const CvMat* subsampleIdx );
 
     virtual CvDTreeNode* predict( const CvMat* sample, const CvMat* missingDataMask=0,
@@ -47,14 +42,6 @@ public:
     virtual const CvMat* get_var_importance();
     virtual void clear();
 
-    // virtual void read( CvFileStorage* fs, CvFileNode* node );
-    // virtual void write( CvFileStorage* fs, const char* name ) const;
-
-    // special read & write methods for trees in the tree ensembles
-    // virtual void read( CvFileStorage* fs, CvFileNode* node,
-    //                    CvDTreeTrainData* data );
-    // virtual void write( CvFileStorage* fs ) const;
-
     const CvDTreeNode* get_root() const;
     int get_pruned_tree_idx() const;
     CvDTreeTrainData* get_data();
@@ -62,10 +49,7 @@ public:
 protected:
     struct DTreeBestSplitFinder
     {
-        // DTreeBestSplitFinder(){ splitSize = 0, tree = 0; node = 0; }
         DTreeBestSplitFinder( CvDTree* _tree, CvDTreeNode* _node);
-        // DTreeBestSplitFinder( const DTreeBestSplitFinder& finder, Split );
-        // virtual ~DTreeBestSplitFinder() {}
         void operator()(const BlockedRange& range);
         void join( DTreeBestSplitFinder& rhs );
         std::shared_ptr<CvDTreeSplit> bestSplit;
@@ -104,13 +88,6 @@ protected:
     virtual int cut_tree( int T, int fold, double min_alpha );
     virtual void free_prune_data(bool cut_tree);
     virtual void free_tree();
-
-    // virtual void write_node( CvFileStorage* fs, CvDTreeNode* node ) const;
-    // virtual void write_split( CvFileStorage* fs, CvDTreeSplit* split ) const;
-    // virtual CvDTreeNode* read_node( CvFileStorage* fs, CvFileNode* node, CvDTreeNode* parent );
-    // virtual CvDTreeSplit* read_split( CvFileStorage* fs, CvFileNode* node );
-    // virtual void write_tree_nodes( CvFileStorage* fs ) const;
-    // virtual void read_tree_nodes( CvFileStorage* fs, CvFileNode* node );
 
     CvDTreeNode* root;
     CvMat* var_importance;

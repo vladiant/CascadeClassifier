@@ -13,8 +13,6 @@ public:
                         const CvMat* subsample_idx, CvBoost* ensemble );
 
     virtual void scale( double s );
-    // virtual void read( CvFileStorage* fs, CvFileNode* node,
-    //                    CvBoost* ensemble, CvDTreeTrainData* _data );
     virtual void clear();
 
     /* dummy methods to avoid warnings: BEGIN */
@@ -24,10 +22,6 @@ public:
                         const CvMat* missingDataMask=0,
                         CvDTreeParams params=CvDTreeParams() );
     virtual bool train( CvDTreeTrainData* trainData, const CvMat* _subsample_idx );
-
-    // virtual void read( CvFileStorage* fs, CvFileNode* node );
-    // virtual void read( CvFileStorage* fs, CvFileNode* node,
-    //                    CvDTreeTrainData* data );
     /* dummy methods to avoid warnings: END */
 
 protected:

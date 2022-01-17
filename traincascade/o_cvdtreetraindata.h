@@ -33,9 +33,6 @@ struct CvDTreeTrainData
 
     virtual CvDTreeNode* subsample_data( const CvMat* _subsample_idx );
 
-    // virtual void write_params( CvFileStorage* fs ) const;
-    // virtual void read_params( CvFileStorage* fs, CvFileNode* node );
-
     // release all the data
     virtual void clear();
 
