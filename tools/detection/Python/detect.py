@@ -6,7 +6,9 @@ import numpy as np
 import cv2
 
 parser = ap.ArgumentParser()
-parser.add_argument("-d", "--descriptor", help="cascade descriptor XML file", required="True")
+parser.add_argument(
+    "-d", "--descriptor", help="cascade descriptor XML file", required="True"
+)
 parser.add_argument("-i", "--image", help="image filename", required="True")
 args = vars(parser.parse_args())
 
