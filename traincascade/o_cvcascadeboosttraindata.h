@@ -3,6 +3,7 @@
 #include "traincascade_features.h"
 #include "o_cvdtreetraindata.h"
 
+// CvCascadeBoostTree
 struct CvCascadeBoostTrainData : CvDTreeTrainData
 {
     CvCascadeBoostTrainData( const CvFeatureEvaluator* _featureEvaluator,

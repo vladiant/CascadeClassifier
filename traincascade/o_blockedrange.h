@@ -4,6 +4,7 @@
 
 #include <opencv2/core.hpp>
 
+// DTreeBestSplitFinder
 class BlockedRange
 {
 public:

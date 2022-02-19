@@ -5,9 +5,11 @@
 #include "o_cvdtreeparams.h"
 #include "o_cvdtreenode.h"
 
+// TODO: common function
 CvMat*
 cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, bool check_for_duplicates=false );
 
+// CvBoost
 struct CvDTreeTrainData
 {
     CvDTreeTrainData();

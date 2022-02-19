@@ -2,6 +2,7 @@
 
 #include "o_cvdtreesplit.h"
 
+// CvBoostTree, CvCascadeBoostTrainData, CvCascadeBoostTree, CvDTree, CvDTreeTrainData
 struct CvDTreeNode
 {
     int class_idx;

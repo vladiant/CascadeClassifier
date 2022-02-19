@@ -35,7 +35,6 @@ public:
     CvMat* get_subtree_weights();
     CvMat* get_weak_response();
     const CvBoostParams& get_params() const;
-    // const CvDTreeTrainData* get_data() const;
 
 protected:
 

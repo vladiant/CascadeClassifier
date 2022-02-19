@@ -12,6 +12,7 @@
 #include "o_cvdtreesplit.h"
 #include "o_blockedrange.h"
 
+// CvBoostTree
 class CvDTree : public CvStatModel
 {
 public:

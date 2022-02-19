@@ -1,5 +1,6 @@
 #pragma once
 
+// CvBoostTree, CvCascadeBoostTrainData, CvCascadeBoostTree, CvDTree, CvDTreeTrainData
 struct CvDTreeSplit
 {
     int var_idx;

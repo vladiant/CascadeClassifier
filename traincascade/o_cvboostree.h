@@ -3,6 +3,7 @@
 #include "o_cvdtree.h"
 #include "o_cvboost.h"
 
+// CvBoost, CvCascadeBoostTree
 class CvBoostTree: public CvDTree
 {
 public:
