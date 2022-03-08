@@ -6,10 +6,8 @@
 #include "o_cvcascadeboosttree.h"
 #include "o_cvcascadeboosttraindata.h"
 #include "o_cvdtreenode.h"
+#include "o_utils.h"
 
-// TODO: Duplicated!
-#define CV_DTREE_CAT_DIR(idx,subset) \
-    (2*((subset[(idx)>>5]&(1 << ((idx) & 31)))==0)-1)
 
 CvDTreeNode* CvCascadeBoostTree::predict( int sampleIdx ) const
 {

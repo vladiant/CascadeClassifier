@@ -1,8 +1,7 @@
 #include "o_cvboostree.h"
 
-// TODO: Duplicated!
-#define CV_DTREE_CAT_DIR(idx,subset) \
-    (2*((subset[(idx)>>5]&(1 << ((idx) & 31)))==0)-1)
+#include "o_utils.h"
+
 
 static inline double
 log_ratio( double val )
@@ -285,13 +284,6 @@ CvBoostTree::find_split_ord_class( CvDTreeNode* node, int vi, float init_quality
     }
     return split;
 }
-
-template<typename T>
-class LessThanPtr
-{
-public:
-    bool operator()(T* a, T* b) const { return *a < *b; }
-};
 
 CvDTreeSplit*
 CvBoostTree::find_split_cat_class( CvDTreeNode* node, int vi, float init_quality, CvDTreeSplit* _split, uchar* _ext_buf )

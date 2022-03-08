@@ -5,26 +5,10 @@
 #include <opencv2/core/core.hpp>
 
 #include "cascadeclassifier.h"
+#include "o_utils.h"
 
 static const int BlockSizeDelta = 1 << 10;
 static const int MinBlockSize = 1 << 16;
-
-// TODO: Duplicated
-template<typename T, typename Idx>
-class LessThanIdx
-{
-public:
-    LessThanIdx( const T* _arr ) : arr(_arr) {}
-    bool operator()(Idx a, Idx b) const { return arr[a] < arr[b]; }
-    const T* arr;
-};
-
-// TODO: Duplicated
-static inline int cvAlign( int size, int align )
-{
-    CV_DbgAssert( (align & (align-1)) == 0 && size < INT_MAX );
-    return (size + align - 1) & -align;
-}
 
 CvDTreeNode* CvCascadeBoostTrainData::subsample_data( const CvMat* _subsample_idx )
 {

@@ -2,31 +2,11 @@
 
 #include <opencv2/ml/ml.hpp>
 
-// TODO: Extract these in a separate file!
-#define CV_VAR_NUMERICAL    0
-#define CV_VAR_ORDERED      0
-#define CV_VAR_CATEGORICAL  1
-
-// TODO: Duplicated
-#define __BEGIN__ __CV_BEGIN__
-#define __END__  __CV_END__
-#define EXIT __CV_EXIT__
+#include "o_utils.h"
 
 static const float ord_nan = FLT_MAX*0.5f;
 static const int min_block_size = 1 << 16;
 static const int block_size_delta = 1 << 10;
-
-// TODO: Duplicated
-static inline int cvAlign( int size, int align )
-{
-    CV_DbgAssert( (align & (align-1)) == 0 && size < INT_MAX );
-    return (size + align - 1) & -align;
-}
-
-static int icvCmpIntegers( const void* a, const void* b )
-{
-    return *(const int*)a - *(const int*)b;
-}
 
 void
 cvCheckTrainData( const CvMat* train_data, int tflag,
@@ -41,7 +21,7 @@ cvCheckTrainData( const CvMat* train_data, int tflag,
     if( sample_all )
         *sample_all = 0;
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     // check parameter types and sizes
     if( !CV_IS_MAT(train_data) || CV_MAT_TYPE(train_data->type) != CV_32FC1 )
@@ -65,110 +45,7 @@ cvCheckTrainData( const CvMat* train_data, int tflag,
     if( sample_all )
         *sample_all = tflag == cv::ml::ROW_SAMPLE ? train_data->rows : train_data->cols;
 
-    __END__;
-}
-
-CvMat*
-cvPreprocessIndexArray( const CvMat* idx_arr, int data_arr_size, bool check_for_duplicates)
-{
-    CvMat* idx = 0;
-
-    CV_FUNCNAME( "cvPreprocessIndexArray" );
-
-    __BEGIN__;
-
-    int i, idx_total, idx_selected = 0, step, type, prev = INT_MIN, is_sorted = 1;
-    uchar* srcb = 0;
-    int* srci = 0;
-    int* dsti;
-
-    if( !CV_IS_MAT(idx_arr) )
-        CV_ERROR( cv::Error::StsBadArg, "Invalid index array" );
-
-    if( idx_arr->rows != 1 && idx_arr->cols != 1 )
-        CV_ERROR( cv::Error::StsBadSize, "the index array must be 1-dimensional" );
-
-    idx_total = idx_arr->rows + idx_arr->cols - 1;
-    srcb = idx_arr->data.ptr;
-    srci = idx_arr->data.i;
-
-    type = CV_MAT_TYPE(idx_arr->type);
-    step = CV_IS_MAT_CONT(idx_arr->type) ? 1 : idx_arr->step/CV_ELEM_SIZE(type);
-
-    switch( type )
-    {
-    case CV_8UC1:
-    case CV_8SC1:
-        // idx_arr is array of 1's and 0's -
-        // i.e. it is a mask of the selected components
-        if( idx_total != data_arr_size )
-            CV_ERROR( CV_StsUnmatchedSizes,
-            "Component mask should contain as many elements as the total number of input variables" );
-
-        for( i = 0; i < idx_total; i++ )
-            idx_selected += srcb[i*step] != 0;
-
-        if( idx_selected == 0 )
-            CV_ERROR( CV_StsOutOfRange, "No components/input_variables is selected!" );
-
-        break;
-    case CV_32SC1:
-        // idx_arr is array of integer indices of selected components
-        if( idx_total > data_arr_size )
-            CV_ERROR( CV_StsOutOfRange,
-            "index array may not contain more elements than the total number of input variables" );
-        idx_selected = idx_total;
-        // check if sorted already
-        for( i = 0; i < idx_total; i++ )
-        {
-            int val = srci[i*step];
-            if( val >= prev )
-            {
-                is_sorted = 0;
-                break;
-            }
-            prev = val;
-        }
-        break;
-    default:
-        CV_ERROR( CV_StsUnsupportedFormat, "Unsupported index array data type "
-                                           "(it should be 8uC1, 8sC1 or 32sC1)" );
-    }
-
-    CV_CALL( idx = cvCreateMat( 1, idx_selected, CV_32SC1 ));
-    dsti = idx->data.i;
-
-    if( type < CV_32SC1 )
-    {
-        for( i = 0; i < idx_total; i++ )
-            if( srcb[i*step] )
-                *dsti++ = i;
-    }
-    else
-    {
-        for( i = 0; i < idx_total; i++ )
-            dsti[i] = srci[i*step];
-
-        if( !is_sorted )
-            qsort( dsti, idx_total, sizeof(dsti[0]), icvCmpIntegers );
-
-        if( dsti[0] < 0 || dsti[idx_total-1] >= data_arr_size )
-            CV_ERROR( CV_StsOutOfRange, "the index array elements are out of range" );
-
-        if( check_for_duplicates )
-        {
-            for( i = 1; i < idx_total; i++ )
-                if( dsti[i] <= dsti[i-1] )
-                    CV_ERROR( cv::Error::StsBadArg, "There are duplicated index array elements" );
-        }
-    }
-
-    __END__;
-
-    if( cvGetErrStatus() < 0 )
-        cvReleaseMat( &idx );
-
-    return idx;
+    __CV_END__;
 }
 
 CvDTreeTrainData::CvDTreeTrainData()
@@ -210,7 +87,7 @@ bool CvDTreeTrainData::set_params( const CvDTreeParams& _params )
 
     CV_FUNCNAME( "CvDTreeTrainData::set_params" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     // set parameters
     params = _params;
@@ -238,27 +115,10 @@ bool CvDTreeTrainData::set_params( const CvDTreeParams& _params )
 
     ok = true;
 
-    __END__;
+    __CV_END__;
 
     return ok;
 }
-
-template<typename T>
-class LessThanPtr
-{
-public:
-    bool operator()(T* a, T* b) const { return *a < *b; }
-};
-
-// TODO: Duplicated
-template<typename T, typename Idx>
-class LessThanIdx
-{
-public:
-    LessThanIdx( const T* _arr ) : arr(_arr) {}
-    bool operator()(Idx a, Idx b) const { return arr[a] < arr[b]; }
-    const T* arr;
-};
 
 struct CvPair16u32s
 {
@@ -282,7 +142,7 @@ cvPreprocessVarType( const CvMat* var_type, const CvMat* var_idx,
     if( response_type )
         *response_type = -1;
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     int i, tm_size, tm_step;
     //int* map = 0;
@@ -330,7 +190,7 @@ cvPreprocessVarType( const CvMat* var_type, const CvMat* var_idx,
         dst[i] = (uchar)(src[/*idx*/i*tm_step] != 0);
     }
 
-    __END__;
+    __CV_END__;
 
     return out_var_type;
 }
@@ -353,7 +213,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
 
     CV_FUNCNAME( "CvDTreeTrainData::set_data" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     int sample_all = 0, r_type, cv_n;
     int total_c_count = 0;
@@ -399,7 +259,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
         nv_heap = data->nv_heap; cv_heap = data->cv_heap;
 
         data_root = new_node( 0, sample_count, 0, 0 );
-        EXIT;
+        __CV_EXIT__;
     }
 
     clear();
@@ -461,7 +321,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
                   "floating-point vector containing as many elements as "
                   "the total number of samples in the training data matrix" );
 
-    r_type = CV_VAR_CATEGORICAL;
+    r_type = cv::ml::VAR_CATEGORICAL;
     if( _var_type )
         CV_CALL( var_type0 = cvPreprocessVarType( _var_type, var_idx, var_count, &r_type ));
 
@@ -470,13 +330,13 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
     cat_var_count = 0;
     ord_var_count = -1;
 
-    is_classifier = r_type == CV_VAR_CATEGORICAL;
+    is_classifier = r_type == cv::ml::VAR_CATEGORICAL;
 
     // step 0. calc the number of categorical vars
     for( vi = 0; vi < var_count; vi++ )
     {
-        char vt = var_type0 ? var_type0->data.ptr[vi] : CV_VAR_ORDERED;
-        var_type->data.i[vi] = vt == CV_VAR_CATEGORICAL ? cat_var_count++ : ord_var_count--;
+        char vt = var_type0 ? var_type0->data.ptr[vi] : static_cast<char>(cv::ml::VAR_ORDERED);
+        var_type->data.i[vi] = vt == cv::ml::VAR_CATEGORICAL ? cat_var_count++ : ord_var_count--;
     }
 
     ord_var_count = ~ord_var_count;
@@ -862,7 +722,7 @@ void CvDTreeTrainData::set_data( const CvMat* _train_data, int _tflag,
     CV_CALL( direction = cvCreateMat( 1, sample_count, CV_8UC1 ));
     CV_CALL( split_buf = cvCreateMat( 1, sample_count, CV_32SC1 ));
 
-    __END__;
+    __CV_END__;
 
     if( data )
         delete data;
@@ -895,7 +755,7 @@ CvDTreeNode* CvDTreeTrainData::subsample_data( const CvMat* _subsample_idx )
 
     CV_FUNCNAME( "CvDTreeTrainData::subsample_data" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     if( !data_root )
         CV_ERROR( CV_StsError, "No training data has been set" );
@@ -1080,7 +940,7 @@ CvDTreeNode* CvDTreeTrainData::subsample_data( const CvMat* _subsample_idx )
         }
     }
 
-    __END__;
+    __CV_END__;
 
     cvReleaseMat( &isubsample_idx );
     cvReleaseMat( &subsample_co );
@@ -1098,7 +958,7 @@ void CvDTreeTrainData::get_vectors( const CvMat* _subsample_idx,
 
     CV_FUNCNAME( "CvDTreeTrainData::get_vectors" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     int i, vi, total = sample_count, count = total, cur_ofs = 0;
     int* sidx = 0;
@@ -1214,7 +1074,7 @@ void CvDTreeTrainData::get_vectors( const CvMat* _subsample_idx,
         }
     }
 
-    __END__;
+    __CV_END__;
 
     cvReleaseMat( &subsample_idx );
     cvReleaseMat( &subsample_co );

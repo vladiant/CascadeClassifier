@@ -6,6 +6,8 @@ find_package(OpenCV REQUIRED)
 
 add_executable(
     ${PROJECT_NAME}
+    o_utils.h
+    o_utils.cpp
     o_cvdtreeparams.h
     o_cvdtreeparams.cpp
     o_cvboostparams.h

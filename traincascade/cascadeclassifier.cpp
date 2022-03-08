@@ -1,8 +1,11 @@
-#include <opencv2/core.hpp>
-
 #include "cascadeclassifier.h"
+
 #include <queue>
 #include <iostream>
+
+#include <opencv2/core.hpp>
+
+#include "o_cvcascadeboosttree.h"
 
 using namespace std;
 using namespace cv;
@@ -469,10 +472,6 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
             {
                 int inner_node_idx = -1, total_inner_node_idx = -1;
 
-                // TODO: Fix
-                static_cast<void>(inner_node_idx);
-                static_cast<void>(total_inner_node_idx);
-                /*
                 queue<const CvDTreeNode*> inner_nodes_queue;
                 CvCascadeBoostTree* tree = *((CvCascadeBoostTree**) cvGetSeqElem( weak, wi ));
 
@@ -517,7 +516,7 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
                     fs << "}"; // ICV_HAAR_FEATURE_NAME
                     inner_nodes_queue.pop();
                 }
-                */
+
                 fs << "]";
             }
             fs << "]"; //ICV_HAAR_TREES_NAME

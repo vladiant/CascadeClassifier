@@ -5,11 +5,6 @@
 #include "o_cvdtreeparams.h"
 #include "o_cvboostree.h"
 
-// TODO: Duplicated
-#define __BEGIN__ __CV_BEGIN__
-#define __END__  __CV_END__
-#define EXIT __CV_EXIT__
-
 CvBoost::CvBoost()
 {
     data = nullptr;
@@ -87,7 +82,7 @@ CvBoost::set_params( const CvBoostParams& _params )
 
     CV_FUNCNAME( "CvBoost::set_params" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     params = _params;
     if( params.boost_type != DISCRETE && params.boost_type != REAL &&
@@ -112,7 +107,7 @@ CvBoost::set_params( const CvBoostParams& _params )
 
     ok = true;
 
-    __END__;
+    __CV_END__;
 
     return ok;
 }
@@ -122,13 +117,13 @@ CvBoost::trim_weights()
 {
     //CV_FUNCNAME( "CvBoost::trim_weights" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     int i, count = data->sample_count, nz_count = 0;
     double sum, threshold;
 
     if( params.weight_trim_rate <= 0. || params.weight_trim_rate >= 1. )
-        EXIT;
+        __CV_EXIT__;
 
     // use weak_eval as temporary buffer for sorted weights
     cvCopy( weights, weak_eval );
@@ -159,7 +154,7 @@ CvBoost::trim_weights()
 
     have_subsample = nz_count < count;
 
-    __END__;
+    __CV_END__;
 }
 
 CvMat*

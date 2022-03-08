@@ -1,19 +1,7 @@
 #include "o_cvdtree.h"
 
-// TODO: Duplicated!
-#define __BEGIN__ __CV_BEGIN__
-#define __END__  __CV_END__
-#define EXIT __CV_EXIT__
+#include "o_utils.h"
 
-#define CV_DTREE_CAT_DIR(idx,subset) \
-    (2*((subset[(idx)>>5]&(1 << ((idx) & 31)))==0)-1)
-
-template<typename T>
-class LessThanPtr
-{
-public:
-    bool operator()(T* a, T* b) const { return *a < *b; }
-};
 
 CvDTree::CvDTree()
 {
@@ -73,7 +61,7 @@ bool CvDTree::train( const CvMat* _train_data, int _tflag,
 
     CV_FUNCNAME( "CvDTree::train" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     clear();
     data = new CvDTreeTrainData( _train_data, _tflag, _responses,
@@ -81,7 +69,7 @@ bool CvDTree::train( const CvMat* _train_data, int _tflag,
                                  _missing_mask, _params, false );
     CV_CALL( result = do_train(0) );
 
-    __END__;
+    __CV_END__;
 
     return result;
 }
@@ -109,14 +97,14 @@ bool CvDTree::train( CvDTreeTrainData* _data, const CvMat* _subsample_idx )
 
     CV_FUNCNAME( "CvDTree::train" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     clear();
     data = _data;
     data->shared = true;
     CV_CALL( result = do_train(_subsample_idx));
 
-    __END__;
+    __CV_END__;
 
     return result;
 }
@@ -128,7 +116,7 @@ bool CvDTree::do_train( const CvMat* _subsample_idx )
 
     CV_FUNCNAME( "CvDTree::do_train" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     root = data->subsample_data( _subsample_idx );
 
@@ -148,7 +136,7 @@ bool CvDTree::do_train( const CvMat* _subsample_idx )
         result = true;
     }
 
-    __END__;
+    __CV_END__;
 
     return result;
 }
@@ -1784,7 +1772,7 @@ void CvDTree::prune_cv()
 
     CV_FUNCNAME( "CvDTree::prune_cv" );
 
-    __BEGIN__;
+    __CV_BEGIN__;
 
     int ti, j, tree_count = 0, cv_n = data->params.cv_folds, n = root->sample_count;
     // currently, 1SE for regression is not implemented
@@ -1864,7 +1852,7 @@ void CvDTree::prune_cv()
     pruned_tree_idx = min_idx;
     free_prune_data(data->params.truncate_pruned_tree != 0);
 
-    __END__;
+    __CV_END__;
 
     cvReleaseMat( &err_jk );
     cvReleaseMat( &ab );
