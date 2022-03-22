@@ -1,7 +1,12 @@
 #pragma once
 
-#include "traincascade_features.h"
+#include <opencv2/core/types_c.h>
+
 #include "o_cvdtreetraindata.h"
+#include "o_cvdtreeparams.h"
+
+class CvFeatureEvaluator;
+class CvDTreeNode;
 
 // CvCascadeBoostTree
 struct CvCascadeBoostTrainData : CvDTreeTrainData

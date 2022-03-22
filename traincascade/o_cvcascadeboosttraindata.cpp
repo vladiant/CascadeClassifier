@@ -6,6 +6,9 @@
 
 #include "cascadeclassifier.h"
 #include "o_utils.h"
+#include "o_cvdtreenode.h"
+#include "o_cvdtreesplit.h"
+
 
 static const int BlockSizeDelta = 1 << 10;
 static const int MinBlockSize = 1 << 16;

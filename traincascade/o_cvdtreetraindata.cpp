@@ -1,8 +1,11 @@
 #include "o_cvdtreetraindata.h"
 
 #include <opencv2/ml/ml.hpp>
+#include <opencv2/core/core_c.h>
 
 #include "o_utils.h"
+#include "o_cvdtreesplit.h"
+#include "o_cvdtreenode.h"
 
 static const float ord_nan = FLT_MAX*0.5f;
 static const int min_block_size = 1 << 16;

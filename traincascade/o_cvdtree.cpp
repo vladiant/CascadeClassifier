@@ -1,6 +1,11 @@
 #include "o_cvdtree.h"
 
 #include "o_utils.h"
+#include "o_cvdtreetraindata.h"
+#include "o_cvdtreenode.h"
+#include "o_blockedrange.h"
+#include "o_cvdtreeparams.h"
+#include "o_cvdtreesplit.h"
 
 
 CvDTree::CvDTree()

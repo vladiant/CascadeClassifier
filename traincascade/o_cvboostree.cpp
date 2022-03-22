@@ -1,6 +1,10 @@
 #include "o_cvboostree.h"
 
 #include "o_utils.h"
+#include "o_cvdtreenode.h"
+#include "o_cvdtreesplit.h"
+#include "o_cvboost.h"
+#include "o_cvdtreetraindata.h"
 
 
 static inline double

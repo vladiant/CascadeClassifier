@@ -1,9 +1,5 @@
 #pragma once
 
-#include <vector>
-
-#include <opencv2/core.hpp>
-
 // DTreeBestSplitFinder
 class BlockedRange
 {
@@ -23,7 +19,6 @@ void parallel_for( const BlockedRange& range, const Body& body )
 {
     body(range);
 }
-typedef std::vector<cv::Rect> ConcurrentRectVector;
 
 class Split {};
 

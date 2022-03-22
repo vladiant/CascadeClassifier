@@ -1,9 +1,18 @@
 #pragma once
 
-#include <opencv2/core/core_c.h>
+#include <cstddef>
 
 #include "o_cvdtreeparams.h"
-#include "o_cvdtreenode.h"
+
+namespace cv {
+    class RNG;
+}
+
+class CvMat;
+class CvDTreeNode;
+class CvDTreeSplit;
+class CvMemStorage;
+class CvSet;
 
 // CvBoost
 struct CvDTreeTrainData
@@ -27,7 +36,7 @@ struct CvDTreeTrainData
     virtual void do_responses_copy();
 
     virtual void get_vectors( const CvMat* _subsample_idx,
-         float* values, uchar* missing, float* responses, bool get_class_idx=false );
+         float* values, unsigned char* missing, float* responses, bool get_class_idx=false );
 
     virtual CvDTreeNode* subsample_data( const CvMat* _subsample_idx );
 

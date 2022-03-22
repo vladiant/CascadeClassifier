@@ -4,6 +4,7 @@
 
 #include "o_cvdtreeparams.h"
 #include "o_cvboostree.h"
+#include "o_cvdtreetraindata.h"
 
 CvBoost::CvBoost()
 {

@@ -9,6 +9,7 @@
 #include "cascadeclassifier.h"
 #include "o_cvcascadeboosttree.h"
 #include "o_cvcascadeboosttraindata.h"
+#include "o_cvdtreenode.h"
 
 using cv::Size;
 using cv::Mat;

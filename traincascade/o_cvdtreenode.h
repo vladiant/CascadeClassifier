@@ -1,6 +1,7 @@
 #pragma once
 
-#include "o_cvdtreesplit.h"
+class CvDTreeNode;
+class CvDTreeSplit;
 
 // CvBoostTree, CvCascadeBoostTrainData, CvCascadeBoostTree, CvDTree, CvDTreeTrainData
 struct CvDTreeNode

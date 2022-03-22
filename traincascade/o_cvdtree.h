@@ -5,12 +5,14 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/core_c.h>
 
-#include "o_cvstatmodel.h"
 #include "o_cvdtreeparams.h"
-#include "o_cvdtreenode.h"
-#include "o_cvdtreetraindata.h"
-#include "o_cvdtreesplit.h"
-#include "o_blockedrange.h"
+#include "o_cvstatmodel.h"
+
+class BlockedRange;
+class CvDTreeParams;
+class CvDTreeTrainData;
+class CvDTreeNode;
+class CvDTreeSplit;
 
 // CvBoostTree
 class CvDTree : public CvStatModel

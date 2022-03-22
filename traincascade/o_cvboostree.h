@@ -1,7 +1,8 @@
 #pragma once
 
 #include "o_cvdtree.h"
-#include "o_cvboost.h"
+
+class CvBoost;
 
 // CvBoost, CvCascadeBoostTree
 class CvBoostTree: public CvDTree

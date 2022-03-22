@@ -6,6 +6,8 @@
 #include <opencv2/core.hpp>
 
 #include "o_cvcascadeboosttree.h"
+#include "o_cvdtreenode.h"
+#include "o_cvdtreesplit.h"
 
 using namespace std;
 using namespace cv;

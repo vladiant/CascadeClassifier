@@ -6,6 +6,7 @@
 #include "o_cvcascadeboosttree.h"
 #include "o_cvcascadeboosttraindata.h"
 #include "o_cvdtreenode.h"
+#include "o_cvdtreesplit.h"
 #include "o_utils.h"
 
 

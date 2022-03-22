@@ -1,7 +1,16 @@
 #pragma once
 
 #include "o_cvboostree.h"
-#include "o_cvdtreenode.h"
+
+class CvDTreeNode;
+class CvBoost;
+class CvDTreeTrainData;
+
+namespace cv {
+class FileStorage;
+class FileNode;
+class Mat;
+}
 
 // CvCascadeClassifier, CvCascadeBoost
 class CvCascadeBoostTree : public CvBoostTree
