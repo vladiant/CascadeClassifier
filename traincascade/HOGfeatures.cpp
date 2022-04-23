@@ -108,6 +108,10 @@ CvHOGEvaluator::Feature::Feature()
     for (int i = 0; i < N_CELLS; i++)
     {
         rect[i] = Rect(0, 0, 0, 0);
+        fastRect[i].p0 = 0;
+        fastRect[i].p1 = 0;
+        fastRect[i].p2 = 0;
+        fastRect[i].p3 = 0;
     }
 }
 

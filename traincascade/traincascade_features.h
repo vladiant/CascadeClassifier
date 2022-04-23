@@ -7,15 +7,17 @@
 
 #define FEATURES "features"
 
-#define CV_SUM_OFFSETS( p0, p1, p2, p3, rect, step )                      \
-    /* (x, y) */                                                          \
-    (p0) = (rect).x + (step) * (rect).y;                                  \
-    /* (x + w, y) */                                                      \
-    (p1) = (rect).x + (rect).width + (step) * (rect).y;                   \
-    /* (x + w, y) */                                                      \
-    (p2) = (rect).x + (step) * ((rect).y + (rect).height);                \
-    /* (x + w, y + h) */                                                  \
-    (p3) = (rect).x + (rect).width + (step) * ((rect).y + (rect).height);
+template <typename T, typename Rect>
+void CV_SUM_OFFSETS(T& p0, T& p1, T& p2, T& p3, const Rect& rect, T step ) {                     
+    /* (x, y) */                                                          
+    p0 = rect.x + step * rect.y;                                  
+    /* (x + w, y) */                                                      
+    p1 = rect.x + (rect).width + step * rect.y;                   
+    /* (x + w, y) */                                                      
+    p2 = rect.x + step * (rect.y + rect.height);                
+    /* (x + w, y + h) */                                                  
+    p3 = rect.x + rect.width + step * (rect.y + rect.height);
+}
 
 #define CV_TILTED_OFFSETS( p0, p1, p2, p3, rect, step )                   \
     /* (x, y) */                                                          \

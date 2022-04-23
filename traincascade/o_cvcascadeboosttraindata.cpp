@@ -166,6 +166,7 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
 CvCascadeBoostTrainData::CvCascadeBoostTrainData(
     const CvFeatureEvaluator* _featureEvaluator, const CvDTreeParams& _params) {
   is_classifier = true;
+  numPrecalcVal = 0;
   var_all = var_count = (int)_featureEvaluator->getNumFeatures();
 
   featureEvaluator = _featureEvaluator;

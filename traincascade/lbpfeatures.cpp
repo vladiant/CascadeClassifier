@@ -47,18 +47,19 @@ void CvLBPEvaluator::generateFeatures()
 CvLBPEvaluator::Feature::Feature()
 {
     rect = cvRect(0, 0, 0, 0);
+    std::fill(std::begin(p), std::end(p), 0);
 }
 
 CvLBPEvaluator::Feature::Feature( int offset, int x, int y, int _blockWidth, int _blockHeight )
 {
     Rect tr = rect = cvRect(x, y, _blockWidth, _blockHeight);
-    CV_SUM_OFFSETS( p[0], p[1], p[4], p[5], tr, offset )
+    CV_SUM_OFFSETS( p[0], p[1], p[4], p[5], tr, offset );
     tr.x += 2*rect.width;
-    CV_SUM_OFFSETS( p[2], p[3], p[6], p[7], tr, offset )
+    CV_SUM_OFFSETS( p[2], p[3], p[6], p[7], tr, offset );
     tr.y +=2*rect.height;
-    CV_SUM_OFFSETS( p[10], p[11], p[14], p[15], tr, offset )
+    CV_SUM_OFFSETS( p[10], p[11], p[14], p[15], tr, offset );
     tr.x -= 2*rect.width;
-    CV_SUM_OFFSETS( p[8], p[9], p[12], p[13], tr, offset )
+    CV_SUM_OFFSETS( p[8], p[9], p[12], p[13], tr, offset );
 }
 
 void CvLBPEvaluator::Feature::write(FileStorage &fs) const

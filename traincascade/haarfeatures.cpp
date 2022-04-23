@@ -255,6 +255,12 @@ CvHaarEvaluator::Feature::Feature()
     tilted = false;
     rect[0].r = rect[1].r = rect[2].r = Rect(0,0,0,0);
     rect[0].weight = rect[1].weight = rect[2].weight = 0;
+    for( int j = 0; j < CV_HAAR_FEATURE_MAX; j++ ) {
+        fastRect[j].p0 = 0;
+        fastRect[j].p1 = 0;
+        fastRect[j].p2 = 0;
+        fastRect[j].p3 = 0;
+    }
 }
 
 CvHaarEvaluator::Feature::Feature( int offset, bool _tilted,
@@ -288,7 +294,7 @@ CvHaarEvaluator::Feature::Feature( int offset, bool _tilted,
         {
             if( rect[j].weight == 0.0F )
                 break;
-            CV_SUM_OFFSETS( fastRect[j].p0, fastRect[j].p1, fastRect[j].p2, fastRect[j].p3, rect[j].r, offset )
+            CV_SUM_OFFSETS( fastRect[j].p0, fastRect[j].p1, fastRect[j].p2, fastRect[j].p3, rect[j].r, offset );
         }
     }
     else

@@ -56,6 +56,11 @@ CvDTreeTrainData::CvDTreeTrainData() {
       counts = direction = split_buf = responses_copy = 0;
   buf = 0;
   tree_storage = temp_storage = 0;
+  work_var_count = 0;
+  tflag = cv::ml::ROW_SAMPLE;
+  train_data = nullptr;
+  responses = nullptr;
+  is_buf_16u = false;
 
   clear();
 }

@@ -24,6 +24,8 @@ CvCascadeImageReader::NegReader::NegReader()
     scale       = 1.0F;
     scaleFactor = 1.4142135623730950488016887242097F;
     stepFactor  = 0.5F;
+    last = 0;
+    round = 0;
 }
 
 bool CvCascadeImageReader::NegReader::create( const string _filename, Size _winSize )
@@ -123,6 +125,10 @@ CvCascadeImageReader::PosReader::PosReader()
 {
     file = 0;
     vec = 0;
+    count = 0;
+    vecSize = 0;
+    last = 0;
+    base = 0;
 }
 
 bool CvCascadeImageReader::PosReader::create( const string _filename )
