@@ -1,6 +1,10 @@
 name: Ubuntu GCC build
 
-on: push
+on: 
+  push:
+
+  schedule:
+    - cron: '* * 10 * *'
 
 env:
   BUILD_TYPE: Release
