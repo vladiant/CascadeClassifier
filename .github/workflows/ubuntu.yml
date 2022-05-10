@@ -4,7 +4,7 @@ on:
   push:
 
   schedule:
-    - cron: '* * 10 * *'
+    - cron: '0 0 10 * *'
 
 env:
   BUILD_TYPE: Release
