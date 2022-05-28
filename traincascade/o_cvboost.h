@@ -24,9 +24,9 @@ class CvBoost : public CvStatModel {
           const CvMat* varType = 0, const CvMat* missingDataMask = 0,
           CvBoostParams params = CvBoostParams());
 
-  CV_WRAP virtual void prune(CvSlice slice);
+  virtual void prune(CvSlice slice);
 
-  CV_WRAP virtual void clear();
+  void clear() override;
 
   CvSeq* get_weak_predictors();
 

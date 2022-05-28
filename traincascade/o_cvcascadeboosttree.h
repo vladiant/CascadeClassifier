@@ -22,5 +22,5 @@ class CvCascadeBoostTree : public CvBoostTree {
   void markFeaturesInMap(cv::Mat& featureMap);
 
  protected:
-  virtual void split_node_data(CvDTreeNode* n);
+  void split_node_data(CvDTreeNode* n) override;
 };

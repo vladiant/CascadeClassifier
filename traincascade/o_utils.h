@@ -5,7 +5,7 @@ class CvMat;
 template <typename T, typename Idx>
 class LessThanIdx {
  public:
-  LessThanIdx(const T* _arr) : arr(_arr) {}
+  explicit LessThanIdx(const T* _arr) : arr(_arr) {}
   bool operator()(Idx a, Idx b) const { return arr[a] < arr[b]; }
   const T* arr;
 };

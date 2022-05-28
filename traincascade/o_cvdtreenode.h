@@ -33,7 +33,7 @@ struct CvDTreeNode {
   double* cv_node_risk;
   double* cv_node_error;
 
-  int get_num_valid(int vi) { return num_valid ? num_valid[vi] : sample_count; }
+  int get_num_valid(int vi) const { return num_valid ? num_valid[vi] : sample_count; }
   void set_num_valid(int vi, int n) {
     if (num_valid) num_valid[vi] = n;
   }

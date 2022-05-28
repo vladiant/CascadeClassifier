@@ -22,20 +22,20 @@ struct CvCascadeBoostTrainData : CvDTreeTrainData {
                        const CvDTreeParams& _params = CvDTreeParams());
   void precalculate();
 
-  virtual CvDTreeNode* subsample_data(const CvMat* _subsample_idx);
+  CvDTreeNode* subsample_data(const CvMat* _subsample_idx) override;
 
-  virtual const int* get_class_labels(CvDTreeNode* n, int* labelsBuf);
-  virtual const int* get_cv_labels(CvDTreeNode* n, int* labelsBuf);
-  virtual const int* get_sample_indices(CvDTreeNode* n, int* indicesBuf);
+  const int* get_class_labels(CvDTreeNode* n, int* labelsBuf) override;
+  const int* get_cv_labels(CvDTreeNode* n, int* labelsBuf) override;
+  const int* get_sample_indices(CvDTreeNode* n, int* indicesBuf) override;
 
-  virtual void get_ord_var_data(CvDTreeNode* n, int vi, float* ordValuesBuf,
-                                int* sortedIndicesBuf, const float** ordValues,
-                                const int** sortedIndices,
-                                int* sampleIndicesBuf);
-  virtual const int* get_cat_var_data(CvDTreeNode* n, int vi,
-                                      int* catValuesBuf);
+  void get_ord_var_data(CvDTreeNode* n, int vi, float* ordValuesBuf,
+                        int* sortedIndicesBuf, const float** ordValues,
+                        const int** sortedIndices,
+                        int* sampleIndicesBuf) override;
+  const int* get_cat_var_data(CvDTreeNode* n, int vi,
+                              int* catValuesBuf) override;
   virtual float getVarValue(int vi, int si);
-  virtual void free_train_data();
+  void free_train_data() override;
 
   const CvFeatureEvaluator* featureEvaluator;
   cv::Mat valCache;  // precalculated feature values (CV_32FC1)

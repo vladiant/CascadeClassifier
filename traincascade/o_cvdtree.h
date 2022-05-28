@@ -42,20 +42,16 @@ class CvDTree : public CvStatModel {
   virtual CvDTreeNode* predict(const cv::Mat& sample,
                                const cv::Mat& missingDataMask = cv::Mat(),
                                bool preprocessedInput = false) const;
-  virtual cv::Mat getVarImportance();
 
-  virtual const CvMat* get_var_importance();
-  virtual void clear();
+  void clear() override;
 
   const CvDTreeNode* get_root() const;
-  int get_pruned_tree_idx() const;
   CvDTreeTrainData* get_data();
 
  protected:
   struct DTreeBestSplitFinder {
     DTreeBestSplitFinder(CvDTree* _tree, CvDTreeNode* _node);
     void operator()(const BlockedRange& range);
-    void join(DTreeBestSplitFinder& rhs);
     std::shared_ptr<CvDTreeSplit> bestSplit;
     std::shared_ptr<CvDTreeSplit> split;
     int splitSize;
