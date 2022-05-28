@@ -7,7 +7,7 @@ env:
 
 jobs:
   configure:
-    name: Get Compile Commands
+    name: Get Compile Commands and Rung clang-tidy
     runs-on: ubuntu-latest
 
     steps:
@@ -31,6 +31,25 @@ jobs:
       with:
         name: compile_commands
         path: ${{github.workspace}}/build/compile_commands.json
+
+    - name: Install Clang Tidy
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-tidy
+        sudo apt-get install -y clang-tools
+
+    - name: Run Clang Tidy
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: |
+        run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,-modernize-use-trailing-return-type,misc-*,clang-analyzer-*' \
+                       -export-fixes ${{github.workspace}}/clang-tidy-fixes.yaml
+
+    - name: Upload Clang Tidy Result
+      uses: actions/upload-artifact@v2
+      with:
+        name: clang_tidy_fixes
+        path: ${{github.workspace}}/clang-tidy-fixes.yaml
 
   cppcheck:
     name: CppCheck
@@ -76,22 +95,3 @@ jobs:
 
     - name: Create Build Folder     
       run: cmake -E make_directory ${{github.workspace}}/build
-
-    - name: Install Clang Tidy
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang-tidy 
-        sudo apt-get install -y clang-tools
-
-    - name: Run Clang Tidy    
-      shell: bash
-      working-directory: ${{github.workspace}}/build
-      run: |
-        run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,-modernize-use-trailing-return-type,misc-*,clang-analyzer-*' \
-                       -export-fixes ${{github.workspace}}/clang-tidy-fixes.yaml
-
-    - name: Upload Clang Tidy Result
-      uses: actions/upload-artifact@v2
-      with:
-        name: clang_tidy_fixes
-        path: ${{github.workspace}}/clang-tidy-fixes.yaml
