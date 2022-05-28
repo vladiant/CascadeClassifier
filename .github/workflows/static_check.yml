@@ -1,0 +1,97 @@
+name: Static Check
+
+on: push
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  configure:
+    name: Get Compile Commands
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install OpenCV     
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libopencv-dev
+
+    - name: Create Build Environment     
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Configure CMake    
+      shell: bash
+      working-directory: ${{github.workspace}}/build      
+      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+    - name: Upload Compile Commands
+      uses: actions/upload-artifact@v2
+      with:
+        name: compile_commands
+        path: ${{github.workspace}}/build/compile_commands.json
+
+  cppcheck:
+    name: CppCheck
+    needs: configure
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download Compile Commands
+      uses: actions/download-artifact@v2
+      with:
+        name: compile_commands
+
+    - name: Install CppCheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck
+
+    - name: Run CppCheck    
+      shell: bash   
+      run: |
+          cppcheck --project=${{github.workspace}}/compile_commands.json \
+                   --error-exitcode=1 --std=c++17 \
+                   --output-file=${{github.workspace}}/cppcheck-report.txt .
+
+    - name: Upload CppCheck Result
+      uses: actions/upload-artifact@v2
+      with:
+        name: cppcheck_report
+        path: ${{github.workspace}}/cppcheck-report.txt
+
+  clang-tidy:
+    name: Clang Tidy
+    needs: configure
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+  
+    - name: Download Compile Commands
+      uses: actions/download-artifact@v2
+      with:
+        name: compile_commands
+
+    - name: Create Build Folder     
+      run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Install Clang Tidy
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-tidy 
+        sudo apt-get install -y clang-tools
+
+    - name: Run Clang Tidy    
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: |
+        run-clang-tidy -checks='cppcoreguidelines-*,performance-*,readibility-*,modernize-*,-modernize-use-trailing-return-type,misc-*,clang-analyzer-*' \
+                       -export-fixes ${{github.workspace}}/clang-tidy-fixes.yaml
+
+    - name: Upload Clang Tidy Result
+      uses: actions/upload-artifact@v2
+      with:
+        name: clang_tidy_fixes
+        path: ${{github.workspace}}/clang-tidy-fixes.yaml
