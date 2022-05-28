@@ -32,8 +32,6 @@ CvDTree::~CvDTree() { clear(); }
 
 const CvDTreeNode* CvDTree::get_root() const { return root; }
 
-int CvDTree::get_pruned_tree_idx() const { return pruned_tree_idx; }
-
 CvDTreeTrainData* CvDTree::get_data() { return data; }
 
 bool CvDTree::train(const CvMat* _train_data, int _tflag,
@@ -340,11 +338,6 @@ void CvDTree::DTreeBestSplitFinder::operator()(const BlockedRange& range) {
     if (res && bestSplit->quality < split->quality)
       memcpy(bestSplit.get(), split.get(), splitSize);
   }
-}
-
-void CvDTree::DTreeBestSplitFinder::join(DTreeBestSplitFinder& rhs) {
-  if (bestSplit->quality < rhs.bestSplit->quality)
-    memcpy(bestSplit.get(), rhs.bestSplit.get(), splitSize);
 }
 
 CvDTreeSplit* CvDTree::find_best_split(CvDTreeNode* node) {
@@ -1879,43 +1872,4 @@ CvDTreeNode* CvDTree::predict(const cv::Mat& _sample, const cv::Mat& _missing,
                               bool preprocessed_input) const {
   CvMat sample = cvMat(_sample), mmask = cvMat(_missing);
   return predict(&sample, mmask.data.ptr ? &mmask : 0, preprocessed_input);
-}
-
-const CvMat* CvDTree::get_var_importance() {
-  if (!var_importance) {
-    CvDTreeNode* node = root;
-    double* importance;
-    if (!node) return 0;
-    var_importance = cvCreateMat(1, data->var_count, CV_64F);
-    cvZero(var_importance);
-    importance = var_importance->data.db;
-
-    for (;;) {
-      CvDTreeNode* parent;
-      for (;; node = node->left) {
-        CvDTreeSplit* split = node->split;
-
-        if (!node->left || node->Tn <= pruned_tree_idx) break;
-
-        for (; split != 0; split = split->next)
-          importance[split->var_idx] += split->quality;
-      }
-
-      for (parent = node->parent; parent && parent->right == node;
-           node = parent, parent = parent->parent)
-        ;
-
-      if (!parent) break;
-
-      node = parent->right;
-    }
-
-    cvNormalize(var_importance, var_importance, 1., 0, CV_L1);
-  }
-
-  return var_importance;
-}
-
-cv::Mat CvDTree::getVarImportance() {
-  return cv::cvarrToMat(get_var_importance());
 }

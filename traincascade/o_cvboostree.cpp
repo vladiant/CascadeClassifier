@@ -268,7 +268,7 @@ CvDTreeSplit* CvBoostTree::find_split_cat_class(CvDTreeNode* node, int vi,
   double* cjk = (double*)cv::alignPtr(base_buf, sizeof(double)) + 2;
   const double* weights = ensemble->get_subtree_weights()->data.db;
   double** dbl_ptr = (double**)(cjk + 2 * mi);
-  int i, j, k, idx;
+  int i, j, idx;
   double L = 0, R;
   double best_val = init_quality;
   int best_subset = -1, subset_i;
@@ -283,7 +283,7 @@ CvDTreeSplit* CvBoostTree::find_split_cat_class(CvDTreeNode* node, int vi,
   for (i = 0; i < n; i++) {
     double w = weights[i];
     j = ((cat_labels[i] == 65535) && data->is_buf_16u) ? -1 : cat_labels[i];
-    k = responses[i];
+    int k = responses[i];
     cjk[j * 2 + k] += w;
   }
 
