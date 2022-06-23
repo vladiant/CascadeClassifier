@@ -70,12 +70,12 @@ public:
 
     CvCascadeParams();
     CvCascadeParams( int _stageType, int _featureType );
-    void write( cv::FileStorage &fs ) const;
-    bool read( const cv::FileNode &node );
+    void write( cv::FileStorage &fs ) const override;
+    bool read( const cv::FileNode &node ) override;
 
-    void printDefaults() const;
-    void printAttrs() const;
-    bool scanAttr( const std::string prmName, const std::string val );
+    void printDefaults() const override;
+    void printAttrs() const override;
+    bool scanAttr( const std::string prmName, const std::string val ) override;
 
     int stageType;
     int featureType;

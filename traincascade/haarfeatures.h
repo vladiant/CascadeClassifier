@@ -17,13 +17,13 @@ public:
     CvHaarFeatureParams();
     CvHaarFeatureParams( int _mode );
 
-    virtual void init( const CvFeatureParams& fp );
-    virtual void write( cv::FileStorage &fs ) const;
-    virtual bool read( const cv::FileNode &node );
+    void init( const CvFeatureParams& fp ) override;
+    void write( cv::FileStorage &fs ) const override;
+    bool read( const cv::FileNode &node ) override;
 
-    virtual void printDefaults() const;
-    virtual void printAttrs() const;
-    virtual bool scanAttr( const std::string prm, const std::string val);
+    void printDefaults() const override;
+    void printAttrs() const override;
+    bool scanAttr( const std::string prm, const std::string val) override;
 
     int mode;
 };
@@ -31,14 +31,14 @@ public:
 class CvHaarEvaluator : public CvFeatureEvaluator
 {
 public:
-    virtual void init(const CvFeatureParams *_featureParams,
-        int _maxSampleCount, cv::Size _winSize );
-    virtual void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    virtual float operator()(int featureIdx, int sampleIdx) const;
-    virtual void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
+    void init(const CvFeatureParams *_featureParams,
+        int _maxSampleCount, cv::Size _winSize ) override;
+    void setImage(const cv::Mat& img, uchar clsLabel, int idx) override;
+    float operator()(int featureIdx, int sampleIdx) const override;
+    void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const override;
     void writeFeature( cv::FileStorage &fs, int fi ) const; // for old file fornat
 protected:
-    virtual void generateFeatures();
+    void generateFeatures() override;
 
     class Feature
     {

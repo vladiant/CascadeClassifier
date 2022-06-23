@@ -19,13 +19,13 @@ class CvHOGEvaluator : public CvFeatureEvaluator
 {
 public:
     virtual ~CvHOGEvaluator() {}
-    virtual void init(const CvFeatureParams *_featureParams,
-        int _maxSampleCount, cv::Size _winSize );
-    virtual void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    virtual float operator()(int varIdx, int sampleIdx) const;
-    virtual void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
+    void init(const CvFeatureParams *_featureParams,
+        int _maxSampleCount, cv::Size _winSize ) override;
+    void setImage(const cv::Mat& img, uchar clsLabel, int idx) override;
+    float operator()(int varIdx, int sampleIdx) const override;
+    void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const override;
 protected:
-    virtual void generateFeatures();
+    void generateFeatures() override;
     virtual void integralHistogram(const cv::Mat &img, std::vector<cv::Mat> &histogram, cv::Mat &norm, int nbins) const;
     class Feature
     {
