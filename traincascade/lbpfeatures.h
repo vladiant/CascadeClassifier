@@ -14,14 +14,14 @@ class CvLBPEvaluator : public CvFeatureEvaluator
 {
 public:
     virtual ~CvLBPEvaluator() {}
-    virtual void init(const CvFeatureParams *_featureParams,
-        int _maxSampleCount, cv::Size _winSize );
-    virtual void setImage(const cv::Mat& img, uchar clsLabel, int idx);
-    virtual float operator()(int featureIdx, int sampleIdx) const
+    void init(const CvFeatureParams *_featureParams,
+        int _maxSampleCount, cv::Size _winSize ) override;
+    void setImage(const cv::Mat& img, uchar clsLabel, int idx) override;
+    float operator()(int featureIdx, int sampleIdx) const override
     { return (float)features[featureIdx].calc( sum, sampleIdx); }
-    virtual void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const;
+    void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const override;
 protected:
-    virtual void generateFeatures();
+    void generateFeatures() override;
 
     class Feature
     {

@@ -68,8 +68,8 @@ public:
     enum { HAAR = 0, LBP = 1, HOG = 2 };
     CvFeatureParams();
     virtual void init( const CvFeatureParams& fp );
-    virtual void write( cv::FileStorage &fs ) const;
-    virtual bool read( const cv::FileNode &node );
+    void write( cv::FileStorage &fs ) const override;
+    bool read( const cv::FileNode &node ) override;
     static cv::Ptr<CvFeatureParams> create( int featureType );
     int maxCatCount; // 0 in case of numerical features
     int featSize; // 1 in case of simple features (HAAR, LBP) and N_BINS(9)*N_CELLS(4) in case of Dalal's HOG features
