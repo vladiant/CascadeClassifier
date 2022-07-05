@@ -4,45 +4,78 @@ project(traincascade LANGUAGES CXX)
 
 find_package(OpenCV REQUIRED)
 
+# Library
+add_library(
+    TrainCascadeLib
+    lib/include/o_utils.h
+    lib/src/o_utils.cpp
+    lib/include/o_cvdtreeparams.h
+    lib/src/o_cvdtreeparams.cpp
+    lib/include/o_cvboostparams.h
+    lib/src/o_cvboostparams.cpp
+    lib/include/o_cvstatmodel.h
+    lib/src/o_cvstatmodel.cpp
+    lib/include/o_cvboost.h
+    lib/src/o_cvboost.cpp
+    lib/include/o_cvdtreesplit.h
+    lib/include/o_cvdtreenode.h
+    lib/include/o_cvdtreetraindata.h
+    lib/src/o_cvdtreetraindata.cpp
+    lib/include/o_blockedrange.h
+    lib/include/o_cvdtree.h
+    lib/src/o_cvdtree.cpp
+    lib/include/o_cvboostree.h
+    lib/src/o_cvboostree.cpp
+    lib/include/o_cvcascadeboosttraindata.h
+    lib/src/o_cvcascadeboosttraindata.cpp
+    lib/include/o_cvcascadeboosttree.h
+    lib/src/o_cvcascadeboosttree.cpp
+    lib/include/boost.h
+    lib/src/boost.cpp
+    lib/include/cascadeclassifier.h
+    lib/src/cascadeclassifier.cpp
+    lib/src/features.cpp
+    lib/include/haarfeatures.h
+    lib/src/haarfeatures.cpp
+    lib/include/HOGfeatures.h
+    lib/src/HOGfeatures.cpp
+    lib/include/imagestorage.h
+    lib/src/imagestorage.cpp
+    lib/include/lbpfeatures.h
+    lib/src/lbpfeatures.cpp
+    lib/include/traincascade_features.h
+)
+
+set_target_properties(
+    TrainCascadeLib
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_compile_options(
+    TrainCascadeLib
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+)
+
+target_include_directories(
+    TrainCascadeLib
+    PUBLIC
+        lib/include/
+)
+
+target_link_libraries(
+    TrainCascadeLib
+    PUBLIC
+        ${OpenCV_LIBS}
+)
+
+# Executable
 add_executable(
     ${PROJECT_NAME}
-    o_utils.h
-    o_utils.cpp
-    o_cvdtreeparams.h
-    o_cvdtreeparams.cpp
-    o_cvboostparams.h
-    o_cvboostparams.cpp
-    o_cvstatmodel.h
-    o_cvstatmodel.cpp
-    o_cvboost.h
-    o_cvboost.cpp
-    o_cvdtreesplit.h
-    o_cvdtreenode.h
-    o_cvdtreetraindata.h
-    o_cvdtreetraindata.cpp
-    o_blockedrange.h
-    o_cvdtree.h
-    o_cvdtree.cpp
-    o_cvboostree.h
-    o_cvboostree.cpp
-    o_cvcascadeboosttraindata.h
-    o_cvcascadeboosttraindata.cpp
-    o_cvcascadeboosttree.h
-    o_cvcascadeboosttree.cpp
-    boost.h
-    boost.cpp
-    cascadeclassifier.h
-    cascadeclassifier.cpp
-    features.cpp
-    haarfeatures.h
-    haarfeatures.cpp
-    HOGfeatures.h
-    HOGfeatures.cpp
-    imagestorage.h
-    imagestorage.cpp
-    lbpfeatures.h
-    lbpfeatures.cpp
-    traincascade_features.h
     traincascade.cpp
 )
 
@@ -64,6 +97,6 @@ target_compile_options(
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
-        ${OpenCV_LIBS}
+        TrainCascadeLib
 )
 
