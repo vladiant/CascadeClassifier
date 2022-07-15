@@ -100,3 +100,39 @@ target_link_libraries(
         TrainCascadeLib
 )
 
+# Tests
+include(CTest)
+
+add_executable(
+    test_traincascade
+    test/main.cpp
+)
+
+set_target_properties(
+    test_traincascade
+    PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED YES
+        CXX_EXTENSIONS NO
+)
+
+target_compile_options(
+    test_traincascade
+    PRIVATE
+         $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+)
+
+target_include_directories(
+    test_traincascade
+    PRIVATE
+        test
+)
+
+target_link_libraries(
+    test_traincascade
+    PRIVATE
+        TrainCascadeLib
+)
+
+add_test(NAME test_traincascade COMMAND test_traincascade)
