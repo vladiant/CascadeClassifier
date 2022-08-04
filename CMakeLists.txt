@@ -17,6 +17,7 @@ if (WIN32 OR APPLE)
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/)
+    message(status "Running external OpenCV build")
 endif()
 
 add_subdirectory(traincascade)
