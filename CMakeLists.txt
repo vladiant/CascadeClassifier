@@ -17,9 +17,9 @@ if ((${CMAKE_SYSTEM_NAME} MATCHES "Windows") OR (${CMAKE_SYSTEM_NAME} MATCHES "D
 
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_BINARY_DIR}/external/lib/cmake/opencv4/)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/)
+    message(VERBOSE ${EXTERNAL_INSTALL_LOCATION})
 endif()
-
 
 add_subdirectory(traincascade)
 
