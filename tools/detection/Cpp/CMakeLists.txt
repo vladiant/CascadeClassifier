@@ -17,6 +17,10 @@ set_target_properties(
         CXX_EXTENSIONS NO
 )
 
+if (WIN32 OR APPLE)
+    add_dependencies(${PROJECT_NAME} opencv)
+endif()
+
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
