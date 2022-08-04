@@ -30,15 +30,3 @@ add_subdirectory(tools/createsamples)
 add_subdirectory(tools/detection/Cpp)
 
 add_subdirectory(tools/visualisation)
-
-# Add Opencv for Windows and MacOS - dependencies
-if (WIN32 OR APPLE)
-    add_dependencies(traincascade opencv)
-    add_dependencies(TrainCascadeLib opencv)
-    add_dependencies(test_traincascade opencv)
-    add_dependencies(annotation opencv)
-    add_dependencies(createsamples opencv)
-    add_dependencies(CascadeDetect opencv)
-    add_dependencies(visualisation opencv)
-    
-endif()
