@@ -9,7 +9,7 @@ if (WIN32 OR APPLE)
     set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
     ExternalProject_Add(opencv
-        GIT_REPOSITORY https://github.com/opencv/opencv
+        GIT_REPOSITORY https://github.com/opencv/opencv.git
         GIT_TAG 4.2.0
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DBUILD_opencv_apps=OFF
     )
