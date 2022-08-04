@@ -23,4 +23,4 @@ jobs:
     - name: Build
       working-directory: ${{github.workspace}}/build
       shell: bash
-      run: cmake --build . --config $BUILD_TYPE -- -j 3
+      run: cmake --build . --config $BUILD_TYPE
