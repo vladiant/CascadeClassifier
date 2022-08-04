@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(CascadeClassifier)
 
 # Add Opencv for Windows and MacOS
-if (WIN32 OR APPLE)
+if (UNIX OR APPLE)
     include(ExternalProject)
 
     set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
@@ -17,7 +17,7 @@ if (WIN32 OR APPLE)
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/)
-    message(status "Running external OpenCV build")
+    message(STATUS "Running external OpenCV build")
 endif()
 
 add_subdirectory(traincascade)
