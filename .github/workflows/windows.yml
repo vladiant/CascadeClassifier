@@ -31,7 +31,9 @@ jobs:
     - name: Configure External CMake
       shell: bash
       working-directory: ${{github.workspace}}/build/external
-      run: cmake ../../external -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake ../../external -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+                 -DCMAKE_MODULE_PATH=${{github.workspace}}/build/external/external/lib \
+                 -DOpenCV_DIR=${{github.workspace}}/build/external/external/lib
 
     - name: Build External
       working-directory: ${{github.workspace}}/build/external
