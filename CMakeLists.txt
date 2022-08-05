@@ -24,6 +24,10 @@ if (WIN32 OR APPLE)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
     
     message(STATUS "Running external OpenCV build")
+
+    include(${EXTERNAL_INSTALL_LOCATION}/libcmake/opencv4/OpenCVConfig.cmake)
+
+    find_package(OpenCV)
 endif()
 
 add_subdirectory(traincascade)
