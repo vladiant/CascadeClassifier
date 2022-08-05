@@ -15,16 +15,9 @@ if (WIN32 OR APPLE)
         CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DBUILD_DOCS=OFF -DBUILD_EXAMPLES=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_TESTS=OFF -DBUILD_opencv_apps=OFF
         TEST_COMMAND export CMAKE_MODULE_PATH="${CMAKE_MODULE_PATH} ${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/"
     )
-
-    if (WIN32)
-        include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
-    else()
-        include_directories(${EXTERNAL_INSTALL_LOCATION}/include/opencv4)
-    endif()
-
-    link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
-    
+       
     message(STATUS "Running external OpenCV build")
 
     list(APPEND CMAKE_MODULE_PATH "${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/")
+    set(ENV{CMAKE_MODULE_PATH} "${CMAKE_MODULE_PATH}")
 endif()
