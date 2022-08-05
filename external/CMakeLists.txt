@@ -19,6 +19,4 @@ if (WIN32 OR APPLE)
 
     list(APPEND CMAKE_MODULE_PATH "${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/")
     set(ENV{CMAKE_MODULE_PATH} "${CMAKE_MODULE_PATH}")
-    set(ENV{OpenCV_DIR} "${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/")
-
 endif()
