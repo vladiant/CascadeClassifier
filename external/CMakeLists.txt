@@ -16,7 +16,4 @@ if (WIN32 OR APPLE)
     )
 
     message(STATUS "Running external OpenCV build")
-
-    list(APPEND CMAKE_MODULE_PATH "${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/")OpenCV_DIR
-    set(ENV{CMAKE_MODULE_PATH} "${CMAKE_MODULE_PATH}")
 endif()
