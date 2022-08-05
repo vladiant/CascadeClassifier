@@ -21,7 +21,7 @@ jobs:
     - name: Set Path To External
       working-directory: ${{github.workspace}}/build/external
       shell: bash
-      run: set CMAKE_MODULE_PATH=%CMAKE_MODULE_PATH% ${{github.workspace}}/lib/cmake/opencv4/
+      run: set CMAKE_MODULE_PATH=%CMAKE_MODULE_PATH% ${{github.workspace}}/build/external/lib/cmake/opencv4/
 
     - name: Configure External CMake
       shell: bash
