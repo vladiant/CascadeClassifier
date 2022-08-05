@@ -67,10 +67,6 @@ target_include_directories(
         lib/include/
 )
 
-if (WIN32 OR APPLE)
-    add_dependencies(TrainCascadeLib opencv)
-endif()
-
 target_link_libraries(
     TrainCascadeLib
     PUBLIC
@@ -97,11 +93,6 @@ target_compile_options(
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
 )
-
-if (WIN32 OR APPLE)
-    add_dependencies(${PROJECT_NAME} opencv)
-endif()
-
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
@@ -136,10 +127,6 @@ target_include_directories(
     PRIVATE
         test
 )
-
-if (WIN32 OR APPLE)
-    add_dependencies(test_traincascade opencv)
-endif()
 
 target_link_libraries(
     test_traincascade
