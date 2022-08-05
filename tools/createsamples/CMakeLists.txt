@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.10)
 project(createsamples LANGUAGES CXX)
 
 find_package(OpenCV)
-include(${EXTERNAL_INSTALL_LOCATION}/lib/cmake/opencv4/OpenCVConfig.cmake)
 
 add_executable(
     ${PROJECT_NAME}
