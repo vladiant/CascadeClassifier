@@ -31,9 +31,7 @@ jobs:
     - name: Configure External CMake
       shell: bash
       working-directory: ${{github.workspace}}/build/external
-      run: cmake ../../external -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-                 -DCMAKE_MODULE_PATH=${{github.workspace}}/build/external/external/lib \
-                 -DOpenCV_DIR=${{github.workspace}}/build/external/external/lib
+      run: cmake ../../external -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build External
       working-directory: ${{github.workspace}}/build/external
@@ -43,7 +41,9 @@ jobs:
     - name: Configure CMake    
       shell: bash
       working-directory: ${{github.workspace}}/build      
-      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+                 -DCMAKE_MODULE_PATH=D:/a/CascadeClassifier/CascadeClassifier/build/external/external/lib \
+                 -DOpenCV_DIR=D:/a/CascadeClassifier/CascadeClassifier/build/external/external/lib
 
     - name: Build
       working-directory: ${{github.workspace}}/build

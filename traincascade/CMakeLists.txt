@@ -64,6 +64,7 @@ target_compile_options(
 target_include_directories(
     TrainCascadeLib
     PUBLIC
+        ${OpenCV_INCLUDE_DIRS}
         lib/include/
 )
 
@@ -93,6 +94,13 @@ target_compile_options(
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
 )
+
+target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE
+        ${OpenCV_INCLUDE_DIRS}
+)
+
 target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE
@@ -126,6 +134,7 @@ target_include_directories(
     test_traincascade
     PRIVATE
         test
+        ${OpenCV_INCLUDE_DIRS}
 )
 
 target_link_libraries(
