@@ -42,8 +42,8 @@ jobs:
       shell: bash
       working-directory: ${{github.workspace}}/build      
       run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-                 -DCMAKE_MODULE_PATH=${{github.workspace}}/external \
-                 -DOpenCV_DIR=${{github.workspace}}/build/external/external/lib
+                 -DCMAKE_MODULE_PATH=D:/a/CascadeClassifier/CascadeClassifier/external \
+                 -DOpenCV_DIR=D:/a/CascadeClassifier/CascadeClassifier/build/external/external/lib
 
     - name: Build
       working-directory: ${{github.workspace}}/build
