@@ -21,7 +21,7 @@ jobs:
     - name: Set Path To External
       working-directory: ${{github.workspace}}/build/external
       shell: bash
-      run: set CMAKE_MODULE_PATH=${{github.workspace}}/build/external/external/lib
+      run: set CMAKE_MODULE_PATH=${{github.workspace}}/external
 
     - name: Set Path To OpenCV
       working-directory: ${{github.workspace}}/build/external
@@ -42,7 +42,7 @@ jobs:
       shell: bash
       working-directory: ${{github.workspace}}/build      
       run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-                 -DCMAKE_MODULE_PATH=D:/a/CascadeClassifier/CascadeClassifier/build/external/external/lib \
+                 -DCMAKE_MODULE_PATH=D:/a/CascadeClassifier/CascadeClassifier/external \
                  -DOpenCV_DIR=D:/a/CascadeClassifier/CascadeClassifier/build/external/external/lib
 
     - name: Build
