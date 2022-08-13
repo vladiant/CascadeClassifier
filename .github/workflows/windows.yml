@@ -4,6 +4,8 @@ on: push
 
 env:
   BUILD_TYPE: Release
+  CMAKE_MODULE_PATH: ${{github.workspace}}/external
+  OpenCV_DIR: ${{github.workspace}}/build/external/external/lib
 
 jobs:
   build:
@@ -41,9 +43,7 @@ jobs:
     - name: Configure CMake    
       shell: bash
       working-directory: ${{github.workspace}}/build      
-      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-                 -DCMAKE_MODULE_PATH=D:/a/CascadeClassifier/CascadeClassifier/external \
-                 -DOpenCV_DIR=D:/a/CascadeClassifier/CascadeClassifier/build/external/external/lib
+      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       working-directory: ${{github.workspace}}/build
