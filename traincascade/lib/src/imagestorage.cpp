@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include <opencv2/core.hpp>
 #include <opencv2/core/core_c.h>
 #include <opencv2/imgproc.hpp>
@@ -135,7 +137,6 @@ bool CvCascadeImageReader::PosReader::create( const string _filename )
 {
     if ( file )
         fclose( file );
-    #define _CRT_SECURE_NO_WARNINGS 1
     file = fopen( _filename.c_str(), "rb" );
 
     if( !file )

@@ -45,6 +45,9 @@ direct,
 // the use of this software, even if advised of the possibility of such damage.
 //
 //M*/
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include <sys/stat.h>
 #include <sys/types.h>
 

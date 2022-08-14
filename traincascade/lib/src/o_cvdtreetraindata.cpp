@@ -606,7 +606,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
             val = fdata[(size_t)si * step];
 
           if (fabs(val) >= ord_nan) {
-            sprintf(err,
+            snprintf(err, sizeof(err),
                     "%d-th value of %d-th (ordered) "
                     "variable (=%g) is too large",
                     i, vi, val);
