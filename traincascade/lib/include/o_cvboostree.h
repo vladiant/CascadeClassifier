@@ -10,8 +10,9 @@ class CvBoostTree : public CvDTree {
   CvBoostTree();
   virtual ~CvBoostTree();
 
-  virtual bool train(CvDTreeTrainData* trainData, const CvMat* subsample_idx,
-                     CvBoost* ensemble);
+  using CvDTree::train;
+  bool train(CvDTreeTrainData* trainData, const CvMat* subsample_idx,
+             CvBoost* ensemble);
 
   virtual void scale(double s);
   void clear() override;

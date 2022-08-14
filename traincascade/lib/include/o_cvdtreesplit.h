@@ -8,11 +8,12 @@ struct CvDTreeSplit {
   int inversed;
   float quality;
   CvDTreeSplit* next;
-  union {
-    int subset[2];
-    struct {
+  struct Ord {
       float c;
       int split_point;
-    } ord;
+  };
+  union {
+    int subset[2];
+    Ord ord;
   };
 };

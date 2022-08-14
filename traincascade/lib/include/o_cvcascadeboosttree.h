@@ -15,7 +15,8 @@ class Mat;
 // CvCascadeClassifier, CvCascadeBoost
 class CvCascadeBoostTree : public CvBoostTree {
  public:
-  virtual CvDTreeNode* predict(int sampleIdx) const;
+  using CvBoostTree::predict;
+  CvDTreeNode* predict(int sampleIdx) const;
   void write(cv::FileStorage& fs, const cv::Mat& featureMap);
   void read(const cv::FileNode& node, CvBoost* _ensemble,
             CvDTreeTrainData* _data);
