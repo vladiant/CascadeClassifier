@@ -4,6 +4,8 @@ on: push
 
 env:
   BUILD_TYPE: Release
+  CMAKE_MODULE_PATH: ${{github.workspace}}/external
+  OpenCV_DIR: ${{github.workspace}}/build/external/external/lib
 
 jobs:
   build:
@@ -14,6 +16,19 @@ jobs:
 
     - name: Create Build Environment     
       run: cmake -E make_directory ${{github.workspace}}/build
+
+    - name: Create External Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build/external
+
+    - name: Configure External CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/build/external
+      run: cmake ../../external -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build External
+      working-directory: ${{github.workspace}}/build/external
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
 
     - name: Configure CMake    
       shell: bash
