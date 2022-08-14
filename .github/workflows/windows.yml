@@ -20,16 +20,6 @@ jobs:
     - name: Create External Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build/external
 
-    - name: Set Path To External
-      working-directory: ${{github.workspace}}/build/external
-      shell: bash
-      run: set CMAKE_MODULE_PATH=${{github.workspace}}/external
-
-    - name: Set Path To OpenCV
-      working-directory: ${{github.workspace}}/build/external
-      shell: bash
-      run: set OpenCV_DIR=${{github.workspace}}/build/external/external/lib
-
     - name: Configure External CMake
       shell: bash
       working-directory: ${{github.workspace}}/build/external
