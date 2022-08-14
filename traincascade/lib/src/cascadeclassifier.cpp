@@ -259,7 +259,7 @@ bool CvCascadeClassifier::train( const string _cascadeDirName,
         }
         // save current stage
         char buf[10];
-        sprintf(buf, "%s%d", "stage", i );
+        snprintf(buf, sizeof(buf), "%s%d", "stage", i );
         string stageFilename = dirName + buf + ".xml";
         FileStorage fs( stageFilename, FileStorage::WRITE );
         if ( !fs.isOpened() )
@@ -375,7 +375,7 @@ void CvCascadeClassifier::writeStages( FileStorage &fs, const Mat& featureMap ) 
     for( vector< Ptr<CvCascadeBoost> >::const_iterator it = stageClassifiers.begin();
         it != stageClassifiers.end();++it, ++i )
     {
-        sprintf( cmnt, "stage %d", i );
+        snprintf( cmnt, sizeof(cmnt), "stage %d", i );
         fs.writeComment(cmnt);
         fs << "{";
         (*it)->write( fs, featureMap );
@@ -546,7 +546,7 @@ bool CvCascadeClassifier::load( const string cascadeDirName )
     char buf[16] = {0};
     for ( int si = 0; si < numStages; si++ )
     {
-        sprintf( buf, "%s%d", "stage", si);
+        snprintf( buf, sizeof(buf), "%s%d", "stage", si);
         fs.open( cascadeDirName + buf + ".xml", FileStorage::READ );
         node = fs.getFirstTopLevelNode();
         if ( !fs.isOpened() )

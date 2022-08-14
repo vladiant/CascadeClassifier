@@ -4,7 +4,7 @@
 
 struct CvDTreeNode;
 class CvBoost;
-class CvDTreeTrainData;
+struct CvDTreeTrainData;
 
 namespace cv {
 class FileStorage;
