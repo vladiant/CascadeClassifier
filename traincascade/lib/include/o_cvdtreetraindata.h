@@ -8,11 +8,11 @@ namespace cv {
 class RNG;
 }
 
-class CvMat;
-class CvDTreeNode;
-class CvDTreeSplit;
-class CvMemStorage;
-class CvSet;
+struct CvMat;
+struct CvDTreeNode;
+struct CvDTreeSplit;
+struct CvMemStorage;
+struct CvSet;
 
 // CvBoost
 struct CvDTreeTrainData {

@@ -2,7 +2,7 @@
 
 #include "o_cvboostree.h"
 
-class CvDTreeNode;
+struct CvDTreeNode;
 class CvBoost;
 class CvDTreeTrainData;
 

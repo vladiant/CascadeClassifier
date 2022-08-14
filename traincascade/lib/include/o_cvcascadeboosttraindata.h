@@ -6,7 +6,7 @@
 #include "o_cvdtreetraindata.h"
 
 class CvFeatureEvaluator;
-class CvDTreeNode;
+struct CvDTreeNode;
 
 // CvCascadeBoostTree
 struct CvCascadeBoostTrainData : CvDTreeTrainData {
