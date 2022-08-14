@@ -11,4 +11,3 @@ add_subdirectory(tools/createsamples)
 add_subdirectory(tools/detection/Cpp)
 
 add_subdirectory(tools/visualisation)
-

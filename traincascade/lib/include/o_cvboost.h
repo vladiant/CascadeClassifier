@@ -5,7 +5,7 @@
 #include "o_cvboostparams.h"
 #include "o_cvstatmodel.h"
 
-class CvDTreeTrainData;
+struct CvDTreeTrainData;
 
 // CvCascadeBoost
 class CvBoost : public CvStatModel {

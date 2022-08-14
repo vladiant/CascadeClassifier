@@ -1,7 +1,7 @@
 #pragma once
 
-class CvDTreeNode;
-class CvDTreeSplit;
+struct CvDTreeNode;
+struct CvDTreeSplit;
 
 // CvBoostTree, CvCascadeBoostTrainData, CvCascadeBoostTree, CvDTree,
 // CvDTreeTrainData

@@ -9,10 +9,10 @@
 #include "o_cvstatmodel.h"
 
 class BlockedRange;
-class CvDTreeParams;
-class CvDTreeTrainData;
-class CvDTreeNode;
-class CvDTreeSplit;
+struct CvDTreeParams;
+struct CvDTreeTrainData;
+struct CvDTreeNode;
+struct CvDTreeSplit;
 
 // CvBoostTree
 class CvDTree : public CvStatModel {

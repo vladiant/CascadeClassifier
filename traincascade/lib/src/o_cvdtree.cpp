@@ -311,15 +311,15 @@ CvDTree::DTreeBestSplitFinder::DTreeBestSplitFinder(CvDTree* _tree,
 void CvDTree::DTreeBestSplitFinder::operator()(const BlockedRange& range) {
   int vi, vi1 = range.begin(), vi2 = range.end();
   int n = node->sample_count;
-  CvDTreeTrainData* data = tree->get_data();
+  CvDTreeTrainData* local_data = tree->get_data();
   cv::AutoBuffer<uchar> inn_buf(2 * n * (sizeof(int) + sizeof(float)));
 
   for (vi = vi1; vi < vi2; vi++) {
     CvDTreeSplit* res;
-    int ci = data->get_var_type(vi);
+    int ci = local_data->get_var_type(vi);
     if (node->get_num_valid(vi) <= 1) continue;
 
-    if (data->is_classifier) {
+    if (local_data->is_classifier) {
       if (ci >= 0)
         res = tree->find_split_cat_class(node, vi, bestSplit->quality,
                                          split.get(), inn_buf.data());

@@ -1,6 +1,6 @@
 #pragma once
 
-class CvMat;
+struct CvMat;
 
 template <typename T, typename Idx>
 class LessThanIdx {

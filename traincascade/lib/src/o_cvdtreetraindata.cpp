@@ -1,5 +1,7 @@
 #include "o_cvdtreetraindata.h"
 
+#include <stdio.h>
+
 #include <opencv2/core/core_c.h>
 
 #include <opencv2/ml/ml.hpp>
@@ -504,7 +506,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
             float t = fdata[(size_t)si * step];
             val = cvRound(t);
             if (fabs(t - val) > FLT_EPSILON) {
-              sprintf(err,
+              snprintf(err, sizeof(err),
                       "%d-th value of %d-th (categorical) "
                       "variable is not an integer",
                       i, vi);
@@ -513,7 +515,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
           }
 
           if (val == INT_MAX) {
-            sprintf(err,
+            snprintf(err, sizeof(err),
                     "%d-th value of %d-th (categorical) "
                     "variable is too large",
                     i, vi);
@@ -604,7 +606,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
             val = fdata[(size_t)si * step];
 
           if (fabs(val) >= ord_nan) {
-            sprintf(err,
+            snprintf(err, sizeof(err),
                     "%d-th value of %d-th (ordered) "
                     "variable (=%g) is too large",
                     i, vi, val);
