@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(CascadeDetect)
 
-find_package(OpenCV)
+find_package(OpenCV REQUIRED)
 
 add_executable(
     ${PROJECT_NAME}

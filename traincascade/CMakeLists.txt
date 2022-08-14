@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(traincascade LANGUAGES CXX)
 
-find_package(OpenCV)
+find_package(OpenCV REQUIRED)
 
 # Library
 add_library(
