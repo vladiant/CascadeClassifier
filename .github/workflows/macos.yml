@@ -5,7 +5,7 @@ on: push
 env:
   BUILD_TYPE: Release
   CMAKE_MODULE_PATH: ${{github.workspace}}/external
-  OpenCV_DIR: ${{github.workspace}}/build/external/external/lib
+  OpenCV_DIR: ${{github.workspace}}/build/external/external/lib/cmake/opencv4
 
 jobs:
   build:
