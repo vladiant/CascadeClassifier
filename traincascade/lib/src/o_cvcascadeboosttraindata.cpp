@@ -13,9 +13,9 @@ static const int MinBlockSize = 1 << 16;
 
 CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
     const CvMat* _subsample_idx) {
-  CvDTreeNode* root = 0;
-  CvMat* isubsample_idx = 0;
-  CvMat* subsample_co = 0;
+  CvDTreeNode* root = nullptr;
+  CvMat* isubsample_idx = nullptr;
+  CvMat* subsample_co = nullptr;
 
   bool isMakeRootCopy = true;
 
@@ -23,7 +23,7 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
 
   if (_subsample_idx) {
     CV_Assert((isubsample_idx =
-                   cvPreprocessIndexArray(_subsample_idx, sample_count)) != 0);
+                   cvPreprocessIndexArray(_subsample_idx, sample_count)) != nullptr);
 
     if (isubsample_idx->cols + isubsample_idx->rows - 1 == sample_count) {
       const int* sidx = isubsample_idx->data.i;
@@ -39,9 +39,9 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
 
   if (isMakeRootCopy) {
     // make a copy of the root node
-    CvDTreeNode temp;
-    int i;
-    root = new_node(0, 1, 0, 0);
+    CvDTreeNode temp{};
+    int i = 0;
+    root = new_node(nullptr, 1, 0, 0);
     temp = *root;
     *root = *data_root;
     root->num_valid = temp.num_valid;
@@ -56,13 +56,13 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
     int* sidx = isubsample_idx->data.i;
     // co - array of count/offset pairs (to handle duplicated values in
     // _subsample_idx)
-    int *co, cur_ofs = 0;
+    int *co = nullptr, cur_ofs = 0;
     int workVarCount = get_work_var_count();
     int count = isubsample_idx->rows + isubsample_idx->cols - 1;
 
-    root = new_node(0, count, 1, 0);
+    root = new_node(nullptr, count, 1, 0);
 
-    CV_Assert((subsample_co = cvCreateMat(1, sample_count * 2, CV_32SC1)) != 0);
+    CV_Assert((subsample_co = cvCreateMat(1, sample_count * 2, CV_32SC1)) != nullptr);
     cvZero(subsample_co);
     co = subsample_co->data.i;
     for (int i = 0; i < count; i++) co[sidx[i] * 2]++;
@@ -82,19 +82,19 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
       CV_Assert(ci < 0);
 
       int* src_idx_buf = (int*)inn_buf.data();
-      float* src_val_buf = (float*)(src_idx_buf + sample_count);
+      auto* src_val_buf = (float*)(src_idx_buf + sample_count);
       int* sample_indices_buf = (int*)(src_val_buf + sample_count);
-      const int* src_idx = 0;
-      const float* src_val = 0;
+      const int* src_idx = nullptr;
+      const float* src_val = nullptr;
       get_ord_var_data(data_root, vi, src_val_buf, src_idx_buf, &src_val,
                        &src_idx, sample_indices_buf);
 
-      int j = 0, idx, count_i;
+      int j = 0, idx = 0, count_i = 0;
       int num_valid = data_root->get_num_valid(vi);
       CV_Assert(num_valid == sample_count);
 
       if (is_buf_16u) {
-        unsigned short* udst_idx =
+        auto* udst_idx =
             (unsigned short*)(buf->data.s +
                               root->buf_idx * get_length_subbuf() +
                               (size_t)vi * sample_count + data_root->offset);
@@ -123,7 +123,7 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
     // subsample cv_lables
     const int* src_lbls = get_cv_labels(data_root, (int*)inn_buf.data());
     if (is_buf_16u) {
-      unsigned short* udst =
+      auto* udst =
           (unsigned short*)(buf->data.s + root->buf_idx * get_length_subbuf() +
                             (size_t)(workVarCount - 1) * sample_count +
                             root->offset);
@@ -139,7 +139,7 @@ CvDTreeNode* CvCascadeBoostTrainData::subsample_data(
     const int* sample_idx_src =
         get_sample_indices(data_root, (int*)inn_buf.data());
     if (is_buf_16u) {
-      unsigned short* sample_idx_dst =
+      auto* sample_idx_dst =
           (unsigned short*)(buf->data.s + root->buf_idx * get_length_subbuf() +
                             (size_t)workVarCount * sample_count + root->offset);
       for (int i = 0; i < count; i++)
@@ -215,8 +215,8 @@ void CvCascadeBoostTrainData::setData(
     const CvFeatureEvaluator* _featureEvaluator, int _numSamples,
     int _precalcValBufSize, int _precalcIdxBufSize,
     const CvDTreeParams& _params) {
-  int* idst = 0;
-  unsigned short* udst = 0;
+  int* idst = nullptr;
+  unsigned short* udst = nullptr;
 
   uint64 effective_buf_size = 0;
   int effective_buf_height = 0, effective_buf_width = 0;
@@ -332,7 +332,7 @@ void CvCascadeBoostTrainData::setData(
   temp_storage = cvCreateMemStorage(tempBlockSize);
   nv_heap = cvCreateSet(0, sizeof(*nv_heap), nvSize, temp_storage);
 
-  data_root = new_node(0, sample_count, 0, 0);
+  data_root = new_node(nullptr, sample_count, 0, 0);
 
   // set sample labels
   if (is_buf_16u)
@@ -411,7 +411,7 @@ void CvCascadeBoostTrainData::get_ord_var_data(
       *sortedIndices = buf->data.i + n->buf_idx * get_length_subbuf() +
                        (size_t)vi * sample_count + n->offset;
     else {
-      const unsigned short* shortIndices =
+      const auto* shortIndices =
           (const unsigned short*)(buf->data.s +
                                   n->buf_idx * get_length_subbuf() +
                                   (size_t)vi * sample_count + n->offset);
@@ -496,7 +496,7 @@ struct FeatureIdxOnlyPrecalc : cv::ParallelLoopBody {
     idst = _buf->data.i;
     is_buf_16u = _is_buf_16u;
   }
-  void operator()(const cv::Range& range) const {
+  void operator()(const cv::Range& range) const override {
     cv::AutoBuffer<float> valCache(sample_count);
     float* valCachePtr = valCache.data();
     for (int fi = range.start; fi < range.end; fi++) {
@@ -535,7 +535,7 @@ struct FeatureValAndIdxPrecalc : cv::ParallelLoopBody {
     idst = _buf->data.i;
     is_buf_16u = _is_buf_16u;
   }
-  void operator()(const cv::Range& range) const {
+  void operator()(const cv::Range& range) const override {
     for (int fi = range.start; fi < range.end; fi++) {
       for (int si = 0; si < sample_count; si++) {
         valCache->at<float>(fi, si) = (*featureEvaluator)(fi, si);
@@ -569,7 +569,7 @@ struct FeatureValOnlyPrecalc : cv::ParallelLoopBody {
     valCache = _valCache;
     sample_count = _sample_count;
   }
-  void operator()(const cv::Range& range) const {
+  void operator()(const cv::Range& range) const override {
     for (int fi = range.start; fi < range.end; fi++)
       for (int si = 0; si < sample_count; si++)
         valCache->at<float>(fi, si) = (*featureEvaluator)(fi, si);
@@ -582,7 +582,7 @@ struct FeatureValOnlyPrecalc : cv::ParallelLoopBody {
 void CvCascadeBoostTrainData::precalculate() {
   int minNum = MIN(numPrecalcVal, numPrecalcIdx);
 
-  double proctime = -TIME(0);
+  double proctime = -TIME(nullptr);
   parallel_for_(cv::Range(numPrecalcVal, numPrecalcIdx),
                 FeatureIdxOnlyPrecalc(featureEvaluator, buf, sample_count,
                                       is_buf_16u != 0));
@@ -592,5 +592,5 @@ void CvCascadeBoostTrainData::precalculate() {
   parallel_for_(
       cv::Range(minNum, numPrecalcVal),
       FeatureValOnlyPrecalc(featureEvaluator, &valCache, sample_count));
-  std::cout << "Precalculation time: " << (proctime + TIME(0)) << std::endl;
+  std::cout << "Precalculation time: " << (proctime + TIME(nullptr)) << std::endl;
 }

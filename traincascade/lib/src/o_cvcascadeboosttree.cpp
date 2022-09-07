@@ -1,9 +1,13 @@
 
 #include "o_cvcascadeboosttree.h"
 
+#include <cmath>
+
 #include <queue>
 
 #include "cascadeclassifier.h"
+#include "math.h"
+
 #include "o_cvcascadeboosttraindata.h"
 #include "o_cvdtreenode.h"
 #include "o_cvdtreesplit.h"
@@ -13,12 +17,12 @@ CvDTreeNode* CvCascadeBoostTree::predict(int sampleIdx) const {
   CvDTreeNode* node = root;
   if (!node) CV_Error(CV_StsError, "The tree has not been trained yet");
 
-  if (((CvCascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount() ==
+  if ((dynamic_cast<CvCascadeBoostTrainData*>(data))->featureEvaluator->getMaxCatCount() ==
       0)  // ordered
   {
     while (node->left) {
       CvDTreeSplit* split = node->split;
-      float val = ((CvCascadeBoostTrainData*)data)
+      float val = (dynamic_cast<CvCascadeBoostTrainData*>(data))
                       ->getVarValue(split->var_idx, sampleIdx);
       node = val <= split->ord.c ? node->left : node->right;
     }
@@ -26,7 +30,7 @@ CvDTreeNode* CvCascadeBoostTree::predict(int sampleIdx) const {
   {
     while (node->left) {
       CvDTreeSplit* split = node->split;
-      int c = (int)((CvCascadeBoostTrainData*)data)
+      int c = (int)(dynamic_cast<CvCascadeBoostTrainData*>(data))
                   ->getVarValue(split->var_idx, sampleIdx);
       node = CV_DTREE_CAT_DIR(c, split->subset) < 0 ? node->left : node->right;
     }
@@ -36,14 +40,14 @@ CvDTreeNode* CvCascadeBoostTree::predict(int sampleIdx) const {
 
 void CvCascadeBoostTree::write(cv::FileStorage& fs, const cv::Mat& featureMap) {
   int maxCatCount =
-      ((CvCascadeBoostTrainData*)data)->featureEvaluator->getMaxCatCount();
+      (dynamic_cast<CvCascadeBoostTrainData*>(data))->featureEvaluator->getMaxCatCount();
   int subsetN = (maxCatCount + 31) / 32;
   std::queue<CvDTreeNode*> internalNodesQueue;
-  int size = (int)pow(2.f, (float)ensemble->get_params().max_depth);
+  int size = (int)std::pow(2.f, (float)ensemble->get_params().max_depth);
   std::vector<float> leafVals(size);
   int leafValIdx = 0;
   int internalNodeIdx = 1;
-  CvDTreeNode* tempNode;
+  CvDTreeNode* tempNode = nullptr;
 
   CV_DbgAssert(root);
   internalNodesQueue.push(root);
@@ -91,13 +95,13 @@ void CvCascadeBoostTree::write(cv::FileStorage& fs, const cv::Mat& featureMap) {
 void CvCascadeBoostTree::read(const cv::FileNode& node, CvBoost* _ensemble,
                               CvDTreeTrainData* _data) {
   int maxCatCount =
-      ((CvCascadeBoostTrainData*)_data)->featureEvaluator->getMaxCatCount();
+      (dynamic_cast<CvCascadeBoostTrainData*>(_data))->featureEvaluator->getMaxCatCount();
   int subsetN = (maxCatCount + 31) / 32;
   int step = 3 + (maxCatCount > 0 ? subsetN : 1);
 
   std::queue<CvDTreeNode*> internalNodesQueue;
   cv::FileNodeIterator internalNodesIt, leafValsuesIt;
-  CvDTreeNode *prntNode, *cldNode;
+  CvDTreeNode *prntNode = nullptr, *cldNode = nullptr;
 
   clear();
   data = _data;
@@ -111,7 +115,7 @@ void CvCascadeBoostTree::read(const cv::FileNode& node, CvBoost* _ensemble,
   internalNodesIt++;
   leafValsuesIt++;
   for (size_t i = 0; i < rnode.size() / step; i++) {
-    prntNode = data->new_node(0, 0, 0, 0);
+    prntNode = data->new_node(nullptr, 0, 0, 0);
     if (maxCatCount > 0) {
       prntNode->split = data->new_split_cat(0, 0);
       for (int j = subsetN - 1; j >= 0; j--) {
@@ -119,20 +123,20 @@ void CvCascadeBoostTree::read(const cv::FileNode& node, CvBoost* _ensemble,
         internalNodesIt++;
       }
     } else {
-      float split_value;
+      float split_value = NAN;
       *internalNodesIt >> split_value;
       internalNodesIt++;
       prntNode->split = data->new_split_ord(0, split_value, 0, 0, 0);
     }
     *internalNodesIt >> prntNode->split->var_idx;
     internalNodesIt++;
-    int ridx, lidx;
+    int ridx = 0, lidx = 0;
     *internalNodesIt >> ridx;
     internalNodesIt++;
     *internalNodesIt >> lidx;
     internalNodesIt++;
     if (ridx <= 0) {
-      prntNode->right = cldNode = data->new_node(0, 0, 0, 0);
+      prntNode->right = cldNode = data->new_node(nullptr, 0, 0, 0);
       *leafValsuesIt >> cldNode->value;
       leafValsuesIt++;
       cldNode->parent = prntNode;
@@ -143,7 +147,7 @@ void CvCascadeBoostTree::read(const cv::FileNode& node, CvBoost* _ensemble,
     }
 
     if (lidx <= 0) {
-      prntNode->left = cldNode = data->new_node(0, 0, 0, 0);
+      prntNode->left = cldNode = data->new_node(nullptr, 0, 0, 0);
       *leafValsuesIt >> cldNode->value;
       leafValsuesIt++;
       cldNode->parent = prntNode;
@@ -161,9 +165,9 @@ void CvCascadeBoostTree::read(const cv::FileNode& node, CvBoost* _ensemble,
 }
 
 void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
-  int n = node->sample_count, nl, nr, scount = data->sample_count;
+  int n = node->sample_count, nl = 0, nr = 0, scount = data->sample_count;
   char* dir = (char*)data->direction->data.ptr;
-  CvDTreeNode *left = 0, *right = 0;
+  CvDTreeNode *left = nullptr, *right = nullptr;
   int* newIdx = data->split_buf->data.i;
   int newBufIdx = data->get_child_buf_idx(node);
   int workVarCount = data->get_work_var_count();
@@ -171,7 +175,7 @@ void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
   size_t length_buf_row = data->get_length_subbuf();
   cv::AutoBuffer<uchar> inn_buf(n * (3 * sizeof(int) + sizeof(float)));
   int* tempBuf = (int*)inn_buf.data();
-  bool splitInputData;
+  bool splitInputData = 0;
 
   complete_node_dir(node);
 
@@ -191,23 +195,23 @@ void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
                     node->right->sample_count > data->params.min_sample_count);
 
   // split ordered variables, keep both halves sorted.
-  for (int vi = 0; vi < ((CvCascadeBoostTrainData*)data)->numPrecalcIdx; vi++) {
+  for (int vi = 0; vi < (dynamic_cast<CvCascadeBoostTrainData*>(data))->numPrecalcIdx; vi++) {
     int ci = data->get_var_type(vi);
     if (ci >= 0 || !splitInputData) continue;
 
     int n1 = node->get_num_valid(vi);
-    float* src_val_buf = (float*)(tempBuf + n);
+    auto* src_val_buf = (float*)(tempBuf + n);
     int* src_sorted_idx_buf = (int*)(src_val_buf + n);
     int* src_sample_idx_buf = src_sorted_idx_buf + n;
-    const int* src_sorted_idx = 0;
-    const float* src_val = 0;
+    const int* src_sorted_idx = nullptr;
+    const float* src_val = nullptr;
     data->get_ord_var_data(node, vi, src_val_buf, src_sorted_idx_buf, &src_val,
                            &src_sorted_idx, src_sample_idx_buf);
 
     for (int i = 0; i < n; i++) tempBuf[i] = src_sorted_idx[i];
 
     if (data->is_buf_16u) {
-      ushort *ldst, *rdst;
+      ushort *ldst = nullptr, *rdst = nullptr;
       ldst = (ushort*)(buf->data.s + left->buf_idx * length_buf_row +
                        vi * scount + left->offset);
       rdst = (ushort*)(ldst + nl);
@@ -227,7 +231,7 @@ void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
       }
       CV_Assert(n1 == n);
     } else {
-      int *ldst, *rdst;
+      int *ldst = nullptr, *rdst = nullptr;
       ldst = buf->data.i + left->buf_idx * length_buf_row + vi * scount +
              left->offset;
       rdst = buf->data.i + right->buf_idx * length_buf_row + vi * scount +
@@ -257,10 +261,10 @@ void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
   for (int i = 0; i < n; i++) tempBuf[i] = src_lbls[i];
 
   if (data->is_buf_16u) {
-    unsigned short* ldst =
+    auto* ldst =
         (unsigned short*)(buf->data.s + left->buf_idx * length_buf_row +
                           (size_t)(workVarCount - 1) * scount + left->offset);
-    unsigned short* rdst =
+    auto* rdst =
         (unsigned short*)(buf->data.s + right->buf_idx * length_buf_row +
                           (size_t)(workVarCount - 1) * scount + right->offset);
 
@@ -300,14 +304,14 @@ void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
   for (int i = 0; i < n; i++) tempBuf[i] = sampleIdx_src[i];
 
   if (data->is_buf_16u) {
-    unsigned short* ldst =
+    auto* ldst =
         (unsigned short*)(buf->data.s + left->buf_idx * length_buf_row +
                           (size_t)workVarCount * scount + left->offset);
-    unsigned short* rdst =
+    auto* rdst =
         (unsigned short*)(buf->data.s + right->buf_idx * length_buf_row +
                           (size_t)workVarCount * scount + right->offset);
     for (int i = 0; i < n; i++) {
-      unsigned short idx = (unsigned short)tempBuf[i];
+      auto idx = (unsigned short)tempBuf[i];
       if (dir[i]) {
         *rdst = idx;
         rdst++;

@@ -73,21 +73,21 @@ struct CvDTreeTrainData {
   virtual void free_train_data();
   virtual void free_node(CvDTreeNode* node);
 
-  int sample_count, var_all, var_count, max_c_count;
-  int ord_var_count, cat_var_count, work_var_count;
-  bool have_labels, have_priors;
-  bool is_classifier;
-  int tflag;
+  int sample_count{}, var_all{}, var_count{}, max_c_count{};
+  int ord_var_count{}, cat_var_count{}, work_var_count{};
+  bool have_labels{}, have_priors{};
+  bool is_classifier{};
+  int tflag{};
 
-  const CvMat* train_data;
-  const CvMat* responses;
+  const CvMat* train_data{};
+  const CvMat* responses{};
   CvMat* responses_copy;  // used in Boosting
 
-  int buf_count,
-      buf_size;  // buf_size is obsolete, please do not use it, use expression
+  int buf_count{},
+      buf_size{};  // buf_size is obsolete, please do not use it, use expression
                  // ((int64)buf->rows * (int64)buf->cols / buf_count) instead
-  bool shared;
-  int is_buf_16u;
+  bool shared{};
+  int is_buf_16u{};
 
   CvMat* cat_count;
   CvMat* cat_ofs;
@@ -115,12 +115,12 @@ struct CvDTreeTrainData {
   CvMemStorage* tree_storage;
   CvMemStorage* temp_storage;
 
-  CvDTreeNode* data_root;
+  CvDTreeNode* data_root{};
 
-  CvSet* node_heap;
-  CvSet* split_heap;
-  CvSet* cv_heap;
-  CvSet* nv_heap;
+  CvSet* node_heap{};
+  CvSet* split_heap{};
+  CvSet* cv_heap{};
+  CvSet* nv_heap{};
 
-  cv::RNG* rng;
+  cv::RNG* rng{};
 };

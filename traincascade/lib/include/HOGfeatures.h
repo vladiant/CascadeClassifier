@@ -41,7 +41,7 @@ protected:
         struct
         {
             int p0, p1, p2, p3;
-        } fastRect[N_CELLS];
+        } fastRect[N_CELLS]{};
     };
     std::vector<Feature> features;
 

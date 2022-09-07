@@ -1,5 +1,7 @@
 #include "o_cvboostree.h"
 
+#include "math.h"
+
 #include "o_cvboost.h"
 #include "o_cvdtreenode.h"
 #include "o_cvdtreesplit.h"
@@ -14,13 +16,13 @@ static inline double log_ratio(double val) {
   return log(val / (1. - val));
 }
 
-CvBoostTree::CvBoostTree() { ensemble = 0; }
+CvBoostTree::CvBoostTree() { ensemble = nullptr; }
 
 CvBoostTree::~CvBoostTree() { clear(); }
 
 void CvBoostTree::clear() {
   CvDTree::clear();
-  ensemble = 0;
+  ensemble = nullptr;
 }
 
 bool CvBoostTree::train(CvDTreeTrainData* _train_data,
@@ -49,7 +51,7 @@ void CvBoostTree::scale(double _scale) {
 
   // traverse the tree and scale all the node values
   for (;;) {
-    CvDTreeNode* parent;
+    CvDTreeNode* parent = nullptr;
     for (;;) {
       node->value *= _scale;
       if (!node->left) break;
@@ -75,7 +77,7 @@ void CvBoostTree::try_split_node(CvDTreeNode* node) {
     double* weak_eval = ensemble->get_weak_response()->data.db;
     cv::AutoBuffer<int> inn_buf(node->sample_count);
     const int* labels = data->get_cv_labels(node, inn_buf.data());
-    int i, count = node->sample_count;
+    int i = 0, count = node->sample_count;
     double value = node->value;
 
     for (i = 0; i < count; i++) weak_eval[labels[i]] = value;
@@ -85,8 +87,8 @@ void CvBoostTree::try_split_node(CvDTreeNode* node) {
 double CvBoostTree::calc_node_dir(CvDTreeNode* node) {
   char* dir = (char*)data->direction->data.ptr;
   const double* weights = ensemble->get_subtree_weights()->data.db;
-  int i, n = node->sample_count, vi = node->split->var_idx;
-  double L, R;
+  int i = 0, n = node->sample_count, vi = node->split->var_idx;
+  double L = NAN, R = NAN;
 
   assert(!node->split->inversed);
 
@@ -112,11 +114,11 @@ double CvBoostTree::calc_node_dir(CvDTreeNode* node) {
   } else  // split on ordered var
   {
     cv::AutoBuffer<uchar> inn_buf(2 * n * sizeof(int) + n * sizeof(float));
-    float* values_buf = (float*)inn_buf.data();
+    auto* values_buf = (float*)inn_buf.data();
     int* sorted_indices_buf = (int*)(values_buf + n);
     int* sample_indices_buf = sorted_indices_buf + n;
-    const float* values = 0;
-    const int* sorted_indices = 0;
+    const float* values = nullptr;
+    const int* sorted_indices = nullptr;
     data->get_ord_var_data(node, vi, values_buf, sorted_indices_buf, &values,
                            &sorted_indices, sample_indices_buf);
     int split_point = node->split->ord.split_point;
@@ -159,18 +161,18 @@ CvDTreeSplit* CvBoostTree::find_split_ord_class(CvDTreeNode* node, int vi,
   cv::AutoBuffer<uchar> inn_buf;
   if (!_ext_buf) inn_buf.allocate(n * (3 * sizeof(int) + sizeof(float)));
   uchar* ext_buf = _ext_buf ? _ext_buf : inn_buf.data();
-  float* values_buf = (float*)ext_buf;
+  auto* values_buf = (float*)ext_buf;
   int* sorted_indices_buf = (int*)(values_buf + n);
   int* sample_indices_buf = sorted_indices_buf + n;
-  const float* values = 0;
-  const int* sorted_indices = 0;
+  const float* values = nullptr;
+  const int* sorted_indices = nullptr;
   data->get_ord_var_data(node, vi, values_buf, sorted_indices_buf, &values,
                          &sorted_indices, sample_indices_buf);
   int* responses_buf = sorted_indices_buf + n;
   const int* responses = data->get_class_labels(node, responses_buf);
   const double* rcw0 = weights + n;
   double lcw[2] = {0, 0}, rcw[2];
-  int i, best_i = -1;
+  int i = 0, best_i = -1;
   double best_val = init_quality;
   int boost_type = ensemble->get_params().boost_type;
   int split_criteria = ensemble->get_params().split_criteria;
@@ -194,7 +196,7 @@ CvDTreeSplit* CvBoostTree::find_split_ord_class(CvDTreeNode* node, int vi,
     for (i = 0; i < n1 - 1; i++) {
       int idx = sorted_indices[i];
       double w = weights[idx], w2 = w * w;
-      double lv, rv;
+      double lv = NAN, rv = NAN;
       idx = responses[idx];
       L += w;
       R -= w;
@@ -232,7 +234,7 @@ CvDTreeSplit* CvBoostTree::find_split_ord_class(CvDTreeNode* node, int vi,
     }
   }
 
-  CvDTreeSplit* split = 0;
+  CvDTreeSplit* split = nullptr;
   if (best_i >= 0) {
     split = _split ? _split : data->new_split_ord(0, 0.0f, 0, 0, 0.0f);
     split->var_idx = vi;
@@ -267,11 +269,11 @@ CvDTreeSplit* CvBoostTree::find_split_cat_class(CvDTreeNode* node, int vi,
 
   double* cjk = (double*)cv::alignPtr(base_buf, sizeof(double)) + 2;
   const double* weights = ensemble->get_subtree_weights()->data.db;
-  double** dbl_ptr = (double**)(cjk + 2 * mi);
-  int i, j, idx;
-  double L = 0, R;
+  auto** dbl_ptr = (double**)(cjk + 2 * mi);
+  int i = 0, j = 0, idx = 0;
+  double L = 0, R = NAN;
   double best_val = init_quality;
-  int best_subset = -1, subset_i;
+  int best_subset = -1, subset_i = 0;
   int boost_type = ensemble->get_params().boost_type;
   int split_criteria = ensemble->get_params().split_criteria;
 
@@ -342,7 +344,7 @@ CvDTreeSplit* CvBoostTree::find_split_cat_class(CvDTreeNode* node, int vi,
     }
   }
 
-  CvDTreeSplit* split = 0;
+  CvDTreeSplit* split = nullptr;
   if (best_subset >= 0) {
     split = _split ? _split : data->new_split_cat(0, -1.0f);
     split->var_idx = vi;
@@ -369,18 +371,18 @@ CvDTreeSplit* CvBoostTree::find_split_ord_reg(CvDTreeNode* node, int vi,
   if (!_ext_buf) inn_buf.allocate(2 * n * (sizeof(int) + sizeof(float)));
   uchar* ext_buf = _ext_buf ? _ext_buf : inn_buf.data();
 
-  float* values_buf = (float*)ext_buf;
+  auto* values_buf = (float*)ext_buf;
   int* indices_buf = (int*)(values_buf + n);
   int* sample_indices_buf = indices_buf + n;
-  const float* values = 0;
-  const int* indices = 0;
+  const float* values = nullptr;
+  const int* indices = nullptr;
   data->get_ord_var_data(node, vi, values_buf, indices_buf, &values, &indices,
                          sample_indices_buf);
-  float* responses_buf = (float*)(indices_buf + n);
+  auto* responses_buf = (float*)(indices_buf + n);
   const float* responses =
       data->get_ord_responses(node, responses_buf, sample_indices_buf);
 
-  int i, best_i = -1;
+  int i = 0, best_i = -1;
   double L = 0, R = weights[n];
   double best_val = init_quality, lsum = 0, rsum = node->value * R;
 
@@ -411,7 +413,7 @@ CvDTreeSplit* CvBoostTree::find_split_ord_reg(CvDTreeNode* node, int vi,
     }
   }
 
-  CvDTreeSplit* split = 0;
+  CvDTreeSplit* split = nullptr;
   if (best_i >= 0) {
     split = _split ? _split : data->new_split_ord(0, 0.0f, 0, 0, 0.0f);
     split->var_idx = vi;
@@ -440,16 +442,16 @@ CvDTreeSplit* CvBoostTree::find_split_cat_reg(CvDTreeNode* node, int vi,
 
   int* cat_labels_buf = (int*)ext_buf;
   const int* cat_labels = data->get_cat_var_data(node, vi, cat_labels_buf);
-  float* responses_buf = (float*)(cat_labels_buf + n);
+  auto* responses_buf = (float*)(cat_labels_buf + n);
   int* sample_indices_buf = (int*)(responses_buf + n);
   const float* responses =
       data->get_ord_responses(node, responses_buf, sample_indices_buf);
 
   double* sum = (double*)cv::alignPtr(base_buf, sizeof(double)) + 1;
   double* counts = sum + mi + 1;
-  double** sum_ptr = (double**)(counts + mi);
+  auto** sum_ptr = (double**)(counts + mi);
   double L = 0, R = 0, best_val = init_quality, lsum = 0, rsum = 0;
-  int i, best_subset = -1, subset_i;
+  int i = 0, best_subset = -1, subset_i = 0;
 
   for (i = -1; i < mi; i++) sum[i] = counts[i] = 0;
 
@@ -499,7 +501,7 @@ CvDTreeSplit* CvBoostTree::find_split_cat_reg(CvDTreeNode* node, int vi,
     }
   }
 
-  CvDTreeSplit* split = 0;
+  CvDTreeSplit* split = nullptr;
   if (best_subset >= 0) {
     split = _split ? _split : data->new_split_cat(0, -1.0f);
     split->var_idx = vi;
@@ -520,11 +522,11 @@ CvDTreeSplit* CvBoostTree::find_surrogate_split_ord(CvDTreeNode* node, int vi,
   cv::AutoBuffer<uchar> inn_buf;
   if (!_ext_buf) inn_buf.allocate(n * (2 * sizeof(int) + sizeof(float)));
   uchar* ext_buf = _ext_buf ? _ext_buf : inn_buf.data();
-  float* values_buf = (float*)ext_buf;
+  auto* values_buf = (float*)ext_buf;
   int* indices_buf = (int*)(values_buf + n);
   int* sample_indices_buf = indices_buf + n;
-  const float* values = 0;
-  const int* indices = 0;
+  const float* values = nullptr;
+  const int* indices = nullptr;
   data->get_ord_var_data(node, vi, values_buf, indices_buf, &values, &indices,
                          sample_indices_buf);
 
@@ -535,9 +537,9 @@ CvDTreeSplit* CvBoostTree::find_surrogate_split_ord(CvDTreeNode* node, int vi,
   // to the left LR - ... primary split sends to the left and the surrogate
   // split sends to the right RL - ... primary split sends to the right and the
   // surrogate split sends to the left RR - ... both send to the right
-  int i, best_i = -1, best_inversed = 0;
-  double best_val;
-  double LL = 0, RL = 0, LR, RR;
+  int i = 0, best_i = -1, best_inversed = 0;
+  double best_val = NAN;
+  double LL = 0, RL = 0, LR = NAN, RR = NAN;
   double worst_val = node->maxlr;
   double sum = 0, sum_abs = 0;
   best_val = worst_val;
@@ -586,7 +588,7 @@ CvDTreeSplit* CvBoostTree::find_surrogate_split_ord(CvDTreeNode* node, int vi,
              ? data->new_split_ord(vi,
                                    (values[best_i] + values[best_i + 1]) * 0.5f,
                                    best_i, best_inversed, (float)best_val)
-             : 0;
+             : nullptr;
 }
 
 CvDTreeSplit* CvBoostTree::find_surrogate_split_cat(CvDTreeNode* node, int vi,
@@ -594,7 +596,7 @@ CvDTreeSplit* CvBoostTree::find_surrogate_split_cat(CvDTreeNode* node, int vi,
   const char* dir = (char*)data->direction->data.ptr;
   const double* weights = ensemble->get_subtree_weights()->data.db;
   int n = node->sample_count;
-  int i, mi = data->cat_count->data.i[data->get_var_type(vi)];
+  int i = 0, mi = data->cat_count->data.i[data->get_var_type(vi)];
 
   int base_size = (2 * mi + 3) * sizeof(double);
   cv::AutoBuffer<uchar> inn_buf(base_size);
@@ -647,13 +649,13 @@ CvDTreeSplit* CvBoostTree::find_surrogate_split_cat(CvDTreeNode* node, int vi,
 
   split->quality = (float)best_val;
   if (split->quality <= node->maxlr)
-    cvSetRemoveByPtr(data->split_heap, split), split = 0;
+    cvSetRemoveByPtr(data->split_heap, split), split = nullptr;
 
   return split;
 }
 
 void CvBoostTree::calc_node_value(CvDTreeNode* node) {
-  int i, n = node->sample_count;
+  int i = 0, n = node->sample_count;
   const double* weights = ensemble->get_weights()->data.db;
   cv::AutoBuffer<uchar> inn_buf(
       n * (sizeof(int) +
@@ -699,8 +701,8 @@ void CvBoostTree::calc_node_value(CvDTreeNode* node) {
     //  * node value is 1/n*sum_i(Y_i), where Y_i is i-th response,
     //    n is the number of samples in the node.
     //  * node risk is the sum of squared errors: sum_i((Y_i - <node_value>)^2)
-    double sum = 0, sum2 = 0, iw;
-    float* values_buf = (float*)(labels_buf + n);
+    double sum = 0, sum2 = 0, iw = NAN;
+    auto* values_buf = (float*)(labels_buf + n);
     int* sample_indices_buf = (int*)(values_buf + n);
     const float* values =
         data->get_ord_responses(node, values_buf, sample_indices_buf);

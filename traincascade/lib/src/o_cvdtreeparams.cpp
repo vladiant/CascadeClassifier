@@ -11,7 +11,7 @@ CvDTreeParams::CvDTreeParams()
       use_1se_rule(true),
       truncate_pruned_tree(true),
       regression_accuracy(0.01f),
-      priors(0) {}
+      priors(nullptr) {}
 
 CvDTreeParams::CvDTreeParams(int _max_depth, int _min_sample_count,
                              float _regression_accuracy, bool _use_surrogates,

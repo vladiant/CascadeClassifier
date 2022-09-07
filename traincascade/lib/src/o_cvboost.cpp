@@ -2,6 +2,8 @@
 
 #include <opencv2/ml/ml.hpp>
 
+#include "math.h"
+
 #include "o_cvboostree.h"
 #include "o_cvdtreeparams.h"
 #include "o_cvdtreetraindata.h"
@@ -12,7 +14,7 @@ CvBoost::CvBoost() {
   default_model_name = "my_boost_tree";
 
   active_vars = active_vars_abs = orig_response = sum_response = weak_eval =
-      subsample_mask = weights = subtree_weights = 0;
+      subsample_mask = weights = subtree_weights = nullptr;
   have_active_cat_vars = have_subsample = false;
 
   clear();
@@ -21,7 +23,7 @@ CvBoost::CvBoost() {
 void CvBoost::prune(CvSlice slice) {
   if (weak && weak->total > 0) {
     CvSeqReader reader;
-    int i, count = cvSliceLength(slice, weak);
+    int i = 0, count = cvSliceLength(slice, weak);
 
     cvStartReadSeq(weak, &reader);
     cvSetSeqReaderPos(&reader, slice.start_index);
@@ -29,7 +31,7 @@ void CvBoost::prune(CvSlice slice) {
     static_cast<void>(i);
     static_cast<void>(count);
     for (i = 0; i < count; i++) {
-      CvBoostTree* w;
+      CvBoostTree* w = nullptr;
       CV_READ_SEQ_ELEM(w, reader);
       delete w;
     }
@@ -101,8 +103,8 @@ void CvBoost::trim_weights() {
 
   __CV_BEGIN__;
 
-  int i, count = data->sample_count, nz_count = 0;
-  double sum, threshold;
+  int i = 0, count = data->sample_count, nz_count = 0;
+  double sum = NAN, threshold = NAN;
 
   if (params.weight_trim_rate <= 0. || params.weight_trim_rate >= 1.)
     __CV_EXIT__;

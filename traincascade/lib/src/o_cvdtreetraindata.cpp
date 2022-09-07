@@ -1,8 +1,10 @@
 #include "o_cvdtreetraindata.h"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <opencv2/core/core_c.h>
+
+#include <cmath>
 
 #include <opencv2/ml/ml.hpp>
 
@@ -55,9 +57,9 @@ void cvCheckTrainData(const CvMat* train_data, int tflag,
 
 CvDTreeTrainData::CvDTreeTrainData() {
   var_idx = var_type = cat_count = cat_ofs = cat_map = priors = priors_mult =
-      counts = direction = split_buf = responses_copy = 0;
-  buf = 0;
-  tree_storage = temp_storage = 0;
+      counts = direction = split_buf = responses_copy = nullptr;
+  buf = nullptr;
+  tree_storage = temp_storage = nullptr;
   work_var_count = 0;
   tflag = cv::ml::ROW_SAMPLE;
   train_data = nullptr;
@@ -73,10 +75,10 @@ CvDTreeTrainData::CvDTreeTrainData(
     const CvMat* _missing_mask, const CvDTreeParams& _params, bool _shared,
     bool _add_labels) {
   var_idx = var_type = cat_count = cat_ofs = cat_map = priors = priors_mult =
-      counts = direction = split_buf = responses_copy = 0;
-  buf = 0;
+      counts = direction = split_buf = responses_copy = nullptr;
+  buf = nullptr;
 
-  tree_storage = temp_storage = 0;
+  tree_storage = temp_storage = nullptr;
 
   set_data(_train_data, _tflag, _responses, _var_idx, _sample_idx, _var_type,
            _missing_mask, _params, _shared, _add_labels);
@@ -135,17 +137,17 @@ class LessThanPairs {
 
 CvMat* cvPreprocessVarType(const CvMat* var_type, const CvMat* var_idx,
                            int var_count, int* response_type) {
-  CvMat* out_var_type = 0;
+  CvMat* out_var_type = nullptr;
   CV_FUNCNAME("cvPreprocessVarType");
 
   if (response_type) *response_type = -1;
 
   __CV_BEGIN__;
 
-  int i, tm_size, tm_step;
+  int i = 0, tm_size = 0, tm_step = 0;
   // int* map = 0;
-  const uchar* src;
-  uchar* dst;
+  const uchar* src = nullptr;
+  uchar* dst = nullptr;
 
   if (!CV_IS_MAT(var_type))
     CV_ERROR(var_type ? cv::Error::StsBadArg : cv::Error::StsNullPtr,
@@ -203,29 +205,29 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
                                 const CvMat* _missing_mask,
                                 const CvDTreeParams& _params, bool _shared,
                                 bool _add_labels, bool _update_data) {
-  CvMat* sample_indices = 0;
-  CvMat* var_type0 = 0;
-  CvMat* tmp_map = 0;
-  int** int_ptr = 0;
-  CvPair16u32s* pair16u32s_ptr = 0;
-  CvDTreeTrainData* data = 0;
-  float* _fdst = 0;
-  int* _idst = 0;
-  unsigned short* udst = 0;
-  int* idst = 0;
+  CvMat* sample_indices = nullptr;
+  CvMat* var_type0 = nullptr;
+  CvMat* tmp_map = nullptr;
+  int** int_ptr = nullptr;
+  CvPair16u32s* pair16u32s_ptr = nullptr;
+  CvDTreeTrainData* data = nullptr;
+  float* _fdst = nullptr;
+  int* _idst = nullptr;
+  unsigned short* udst = nullptr;
+  int* idst = nullptr;
 
   CV_FUNCNAME("CvDTreeTrainData::set_data");
 
   __CV_BEGIN__;
 
-  int sample_all = 0, r_type, cv_n;
+  int sample_all = 0, r_type = 0, cv_n = 0;
   int total_c_count = 0;
-  int tree_block_size, temp_block_size, max_split_size, nv_size, cv_size = 0;
-  int ds_step, dv_step, ms_step = 0,
+  int tree_block_size = 0, temp_block_size = 0, max_split_size = 0, nv_size = 0, cv_size = 0;
+  int ds_step = 0, dv_step = 0, ms_step = 0,
                         mv_step = 0;  // {data|mask}{sample|var}_step
-  int vi, i, size;
+  int vi = 0, i = 0, size = 0;
   char err[100];
-  const int *sidx = 0, *vidx = 0;
+  const int *sidx = nullptr, *vidx = nullptr;
 
   uint64 effective_buf_size = 0;
   int effective_buf_height = 0, effective_buf_width = 0;
@@ -253,25 +255,25 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
     cvReleaseMemStorage(&temp_storage);
 
     priors = data->priors;
-    data->priors = 0;
+    data->priors = nullptr;
     priors_mult = data->priors_mult;
-    data->priors_mult = 0;
+    data->priors_mult = nullptr;
     buf = data->buf;
-    data->buf = 0;
+    data->buf = nullptr;
     buf_count = data->buf_count;
     buf_size = data->buf_size;
     sample_count = data->sample_count;
 
     direction = data->direction;
-    data->direction = 0;
+    data->direction = nullptr;
     split_buf = data->split_buf;
-    data->split_buf = 0;
+    data->split_buf = nullptr;
     temp_storage = data->temp_storage;
-    data->temp_storage = 0;
+    data->temp_storage = nullptr;
     nv_heap = data->nv_heap;
     cv_heap = data->cv_heap;
 
-    data_root = new_node(0, sample_count, 0, 0);
+    data_root = new_node(nullptr, sample_count, 0, 0);
     __CV_EXIT__;
   }
 
@@ -442,23 +444,23 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
   if (cv_size)
     CV_CALL(cv_heap = cvCreateSet(0, sizeof(*cv_heap), cv_size, temp_storage));
 
-  CV_CALL(data_root = new_node(0, sample_count, 0, 0));
+  CV_CALL(data_root = new_node(nullptr, sample_count, 0, 0));
 
   max_c_count = 1;
 
-  _fdst = 0;
-  _idst = 0;
+  _fdst = nullptr;
+  _idst = nullptr;
   if (ord_var_count) _fdst = (float*)cvAlloc(sample_count * sizeof(_fdst[0]));
   if (is_buf_16u && (cat_var_count || is_classifier))
     _idst = (int*)cvAlloc(sample_count * sizeof(_idst[0]));
 
   // transform the training data to convenient representation
   for (vi = 0; vi <= var_count; vi++) {
-    int ci;
-    const uchar* mask = 0;
-    int64 m_step = 0, step;
-    const int* idata = 0;
-    const float* fdata = 0;
+    int ci = 0;
+    const uchar* mask = nullptr;
+    int64 m_step = 0, step = 0;
+    const int* idata = nullptr;
+    const float* fdata = nullptr;
     int num_valid = 0;
 
     if (vi < var_count)  // analyze i-th input variable
@@ -488,8 +490,8 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
         (vi == var_count &&
          is_classifier))  // process categorical variable or response
     {
-      int c_count, prev_label;
-      int* c_map;
+      int c_count = 0, prev_label = 0;
+      int* c_map = nullptr;
 
       if (is_buf_16u)
         udst = (unsigned short*)(buf->data.s + (size_t)vi * sample_count);
@@ -505,7 +507,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
           else {
             float t = fdata[(size_t)si * step];
             val = cvRound(t);
-            if (fabs(t - val) > FLT_EPSILON) {
+            if (std::fabs(t - val) > FLT_EPSILON) {
               snprintf(err, sizeof(err),
                       "%d-th value of %d-th (categorical) "
                       "variable is not an integer",
@@ -605,7 +607,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
           else
             val = fdata[(size_t)si * step];
 
-          if (fabs(val) >= ord_nan) {
+          if (std::fabs(val) >= ord_nan) {
             snprintf(err, sizeof(err),
                     "%d-th value of %d-th (ordered) "
                     "variable (=%g) is too large",
@@ -646,8 +648,8 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
   }
 
   if (cv_n) {
-    unsigned short* usdst = 0;
-    int* idst2 = 0;
+    unsigned short* usdst = nullptr;
+    int* idst2 = nullptr;
 
     if (is_buf_16u) {
       usdst =
@@ -661,7 +663,7 @@ void CvDTreeTrainData::set_data(const CvMat* _train_data, int _tflag,
       for (i = 0; i < sample_count; i++) {
         int a = (*rng)(sample_count);
         int b = (*rng)(sample_count);
-        unsigned short unsh = (unsigned short)vi;
+        auto unsh = (unsigned short)vi;
         CV_SWAP(usdst[a], usdst[b], unsh);
       }
     } else {
@@ -731,9 +733,9 @@ void CvDTreeTrainData::do_responses_copy() {
 }
 
 CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
-  CvDTreeNode* root = 0;
-  CvMat* isubsample_idx = 0;
-  CvMat* subsample_co = 0;
+  CvDTreeNode* root = nullptr;
+  CvMat* isubsample_idx = nullptr;
+  CvMat* subsample_co = nullptr;
 
   bool isMakeRootCopy = true;
 
@@ -761,9 +763,9 @@ CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
 
   if (isMakeRootCopy) {
     // make a copy of the root node
-    CvDTreeNode temp;
-    int i;
-    root = new_node(0, 1, 0, 0);
+    CvDTreeNode temp{};
+    int i = 0;
+    root = new_node(nullptr, 1, 0, 0);
     temp = *root;
     *root = *data_root;
     root->num_valid = temp.num_valid;
@@ -778,12 +780,12 @@ CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
     int* sidx = isubsample_idx->data.i;
     // co - array of count/offset pairs (to handle duplicated values in
     // _subsample_idx)
-    int *co, cur_ofs = 0;
-    int vi, i;
+    int *co = nullptr, cur_ofs = 0;
+    int vi = 0, i = 0;
     int workVarCount = get_work_var_count();
     int count = isubsample_idx->rows + isubsample_idx->cols - 1;
 
-    root = new_node(0, count, 1, 0);
+    root = new_node(nullptr, count, 1, 0);
 
     CV_CALL(subsample_co = cvCreateMat(1, sample_count * 2, CV_32SC1));
     cvZero(subsample_co);
@@ -808,7 +810,7 @@ CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
             data_root, vi, (int*)inn_buf.data());
 
         if (is_buf_16u) {
-          unsigned short* udst =
+          auto* udst =
               (unsigned short*)(buf->data.s +
                                 root->buf_idx * get_length_subbuf() +
                                 (size_t)vi * sample_count + root->offset);
@@ -830,17 +832,17 @@ CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
         if (vi < var_count) root->set_num_valid(vi, num_valid);
       } else {
         int* src_idx_buf = (int*)inn_buf.data();
-        float* src_val_buf = (float*)(src_idx_buf + sample_count);
+        auto* src_val_buf = (float*)(src_idx_buf + sample_count);
         int* sample_indices_buf = (int*)(src_val_buf + sample_count);
-        const int* src_idx = 0;
-        const float* src_val = 0;
+        const int* src_idx = nullptr;
+        const float* src_val = nullptr;
         get_ord_var_data(data_root, vi, src_val_buf, src_idx_buf, &src_val,
                          &src_idx, sample_indices_buf);
-        int j = 0, idx, count_i;
+        int j = 0, idx = 0, count_i = 0;
         int num_valid = data_root->get_num_valid(vi);
 
         if (is_buf_16u) {
-          unsigned short* udst_idx =
+          auto* udst_idx =
               (unsigned short*)(buf->data.s +
                                 root->buf_idx * get_length_subbuf() +
                                 (size_t)vi * sample_count + data_root->offset);
@@ -892,7 +894,7 @@ CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
     const int* sample_idx_src =
         get_sample_indices(data_root, (int*)inn_buf.data());
     if (is_buf_16u) {
-      unsigned short* sample_idx_dst =
+      auto* sample_idx_dst =
           (unsigned short*)(buf->data.s + root->buf_idx * get_length_subbuf() +
                             (size_t)workVarCount * sample_count + root->offset);
       for (i = 0; i < count; i++)
@@ -915,16 +917,16 @@ CvDTreeNode* CvDTreeTrainData::subsample_data(const CvMat* _subsample_idx) {
 void CvDTreeTrainData::get_vectors(const CvMat* _subsample_idx, float* values,
                                    uchar* missing, float* _responses,
                                    bool get_class_idx) {
-  CvMat* subsample_idx = 0;
-  CvMat* subsample_co = 0;
+  CvMat* subsample_idx = nullptr;
+  CvMat* subsample_co = nullptr;
 
   CV_FUNCNAME("CvDTreeTrainData::get_vectors");
 
   __CV_BEGIN__;
 
-  int i, vi, total = sample_count, count = total, cur_ofs = 0;
-  int* sidx = 0;
-  int* co = 0;
+  int i = 0, vi = 0, total = sample_count, count = total, cur_ofs = 0;
+  int* sidx = nullptr;
+  int* co = nullptr;
 
   cv::AutoBuffer<uchar> inn_buf(sample_count *
                                 (2 * sizeof(int) + sizeof(float)));
@@ -953,7 +955,7 @@ void CvDTreeTrainData::get_vectors(const CvMat* _subsample_idx, float* values,
     if (ci >= 0)  // categorical
     {
       float* dst = values + vi;
-      uchar* m = missing ? missing + vi : 0;
+      uchar* m = missing ? missing + vi : nullptr;
       const int* src = get_cat_var_data(data_root, vi, (int*)inn_buf.data());
 
       for (i = 0; i < count; i++, dst += var_count) {
@@ -968,13 +970,13 @@ void CvDTreeTrainData::get_vectors(const CvMat* _subsample_idx, float* values,
     } else  // ordered
     {
       float* dst = values + vi;
-      uchar* m = missing ? missing + vi : 0;
+      uchar* m = missing ? missing + vi : nullptr;
       int count1 = data_root->get_num_valid(vi);
-      float* src_val_buf = (float*)inn_buf.data();
+      auto* src_val_buf = (float*)inn_buf.data();
       int* src_idx_buf = (int*)(src_val_buf + sample_count);
       int* sample_indices_buf = src_idx_buf + sample_count;
-      const float* src_val = 0;
-      const int* src_idx = 0;
+      const float* src_val = nullptr;
+      const int* src_idx = nullptr;
       get_ord_var_data(data_root, vi, src_val_buf, src_idx_buf, &src_val,
                        &src_idx, sample_indices_buf);
 
@@ -1010,7 +1012,7 @@ void CvDTreeTrainData::get_vectors(const CvMat* _subsample_idx, float* values,
         _responses[i] = (float)val;
       }
     } else {
-      float* val_buf = (float*)inn_buf.data();
+      auto* val_buf = (float*)inn_buf.data();
       int* sample_idx_buf = (int*)(val_buf + sample_count);
       const float* _values =
           get_ord_responses(data_root, val_buf, sample_idx_buf);
@@ -1029,13 +1031,13 @@ void CvDTreeTrainData::get_vectors(const CvMat* _subsample_idx, float* values,
 
 CvDTreeNode* CvDTreeTrainData::new_node(CvDTreeNode* parent, int count,
                                         int storage_idx, int offset) {
-  CvDTreeNode* node = (CvDTreeNode*)cvSetNew(node_heap);
+  auto* node = (CvDTreeNode*)cvSetNew(node_heap);
 
   node->sample_count = count;
   node->depth = parent ? parent->depth + 1 : 0;
   node->parent = parent;
-  node->left = node->right = 0;
-  node->split = 0;
+  node->left = node->right = nullptr;
+  node->split = nullptr;
   node->value = 0;
   node->class_idx = 0;
   node->maxlr = 0.;
@@ -1045,7 +1047,7 @@ CvDTreeNode* CvDTreeTrainData::new_node(CvDTreeNode* parent, int count,
   if (nv_heap)
     node->num_valid = (int*)cvSetNew(nv_heap);
   else
-    node->num_valid = 0;
+    node->num_valid = nullptr;
   node->alpha = node->node_risk = node->tree_risk = node->tree_error = 0.;
   node->complexity = 0;
 
@@ -1058,9 +1060,9 @@ CvDTreeNode* CvDTreeTrainData::new_node(CvDTreeNode* parent, int count,
     node->cv_node_error = node->cv_node_risk + cv_n;
   } else {
     node->Tn = 0;
-    node->cv_Tn = 0;
-    node->cv_node_risk = 0;
-    node->cv_node_error = 0;
+    node->cv_Tn = nullptr;
+    node->cv_node_risk = nullptr;
+    node->cv_node_error = nullptr;
   }
 
   return node;
@@ -1069,28 +1071,28 @@ CvDTreeNode* CvDTreeTrainData::new_node(CvDTreeNode* parent, int count,
 CvDTreeSplit* CvDTreeTrainData::new_split_ord(int vi, float cmp_val,
                                               int split_point, int inversed,
                                               float quality) {
-  CvDTreeSplit* split = (CvDTreeSplit*)cvSetNew(split_heap);
+  auto* split = (CvDTreeSplit*)cvSetNew(split_heap);
   split->var_idx = vi;
   split->condensed_idx = INT_MIN;
   split->ord.c = cmp_val;
   split->ord.split_point = split_point;
   split->inversed = inversed;
   split->quality = quality;
-  split->next = 0;
+  split->next = nullptr;
 
   return split;
 }
 
 CvDTreeSplit* CvDTreeTrainData::new_split_cat(int vi, float quality) {
-  CvDTreeSplit* split = (CvDTreeSplit*)cvSetNew(split_heap);
-  int i, n = (max_c_count + 31) / 32;
+  auto* split = (CvDTreeSplit*)cvSetNew(split_heap);
+  int i = 0, n = (max_c_count + 31) / 32;
 
   split->var_idx = vi;
   split->condensed_idx = INT_MIN;
   split->inversed = 0;
   split->quality = quality;
   for (i = 0; i < n; i++) split->subset[i] = 0;
-  split->next = 0;
+  split->next = nullptr;
 
   return split;
 }
@@ -1103,14 +1105,14 @@ void CvDTreeTrainData::free_node(CvDTreeNode* node) {
     cvSetRemoveByPtr(split_heap, split);
     split = next;
   }
-  node->split = 0;
+  node->split = nullptr;
   cvSetRemoveByPtr(node_heap, node);
 }
 
 void CvDTreeTrainData::free_node_data(CvDTreeNode* node) {
   if (node->num_valid) {
     cvSetRemoveByPtr(nv_heap, node->num_valid);
-    node->num_valid = 0;
+    node->num_valid = nullptr;
   }
   // do not free cv_* fields, as all the cross-validation related data is
   // released at once.
@@ -1123,7 +1125,7 @@ void CvDTreeTrainData::free_train_data() {
   cvReleaseMat(&split_buf);
   cvReleaseMemStorage(&temp_storage);
   cvReleaseMat(&responses_copy);
-  cv_heap = nv_heap = 0;
+  cv_heap = nv_heap = nullptr;
 }
 
 void CvDTreeTrainData::clear() {
@@ -1139,7 +1141,7 @@ void CvDTreeTrainData::clear() {
   cvReleaseMat(&priors);
   cvReleaseMat(&priors_mult);
 
-  node_heap = split_heap = 0;
+  node_heap = split_heap = nullptr;
 
   sample_count = var_all = var_count = max_c_count = ord_var_count =
       cat_var_count = 0;
@@ -1148,7 +1150,7 @@ void CvDTreeTrainData::clear() {
   buf_count = buf_size = 0;
   shared = false;
 
-  data_root = 0;
+  data_root = nullptr;
 
   rng = &cv::theRNG();
 }
@@ -1177,7 +1179,7 @@ void CvDTreeTrainData::get_ord_var_data(CvDTreeNode* n, int vi,
     *sorted_indices = buf->data.i + n->buf_idx * get_length_subbuf() +
                       (size_t)vi * sample_count + n->offset;
   else {
-    const unsigned short* short_indices =
+    const auto* short_indices =
         (const unsigned short*)(buf->data.s + n->buf_idx * get_length_subbuf() +
                                 (size_t)vi * sample_count + n->offset);
     for (int i = 0; i < node_sample_count; i++)
@@ -1209,7 +1211,7 @@ void CvDTreeTrainData::get_ord_var_data(CvDTreeNode* n, int vi,
 
 const int* CvDTreeTrainData::get_class_labels(CvDTreeNode* n, int* labels_buf) {
   if (is_classifier) return get_cat_var_data(n, var_count, labels_buf);
-  return 0;
+  return nullptr;
 }
 
 const int* CvDTreeTrainData::get_sample_indices(CvDTreeNode* n,
@@ -1239,17 +1241,17 @@ const float* CvDTreeTrainData::get_ord_responses(CvDTreeNode* n,
 const int* CvDTreeTrainData::get_cv_labels(CvDTreeNode* n, int* labels_buf) {
   if (have_labels)
     return get_cat_var_data(n, get_work_var_count() - 1, labels_buf);
-  return 0;
+  return nullptr;
 }
 
 const int* CvDTreeTrainData::get_cat_var_data(CvDTreeNode* n, int vi,
                                               int* cat_values_buf) {
-  const int* cat_values = 0;
+  const int* cat_values = nullptr;
   if (!is_buf_16u)
     cat_values = buf->data.i + n->buf_idx * get_length_subbuf() +
                  (size_t)vi * sample_count + n->offset;
   else {
-    const unsigned short* short_values =
+    const auto* short_values =
         (const unsigned short*)(buf->data.s + n->buf_idx * get_length_subbuf() +
                                 (size_t)vi * sample_count + n->offset);
     for (int i = 0; i < n->sample_count; i++)
