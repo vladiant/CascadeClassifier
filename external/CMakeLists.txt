@@ -8,7 +8,7 @@ set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
 ExternalProject_Add(opencv
     GIT_REPOSITORY https://github.com/opencv/opencv.git
-    GIT_TAG 4.2.0
+    GIT_TAG 4.5.0
     INSTALL_DIR ${EXTERNAL_INSTALL_LOCATION}
     CMAKE_ARGS
         -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
