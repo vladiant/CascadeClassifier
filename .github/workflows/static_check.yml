@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install OpenCV     
       run: |
@@ -57,8 +57,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Download Compile Commands
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: compile_commands
 
@@ -67,11 +70,11 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y cppcheck
 
-    - name: Run CppCheck    
+    - name: Run CppCheck
       shell: bash   
       run: |
           cppcheck --project=${{github.workspace}}/compile_commands.json \
-                   --error-exitcode=1 --std=c++17 \
+                   --std=c++17 \
                    --output-file=${{github.workspace}}/cppcheck-report.txt .
 
     - name: Upload CppCheck Result
