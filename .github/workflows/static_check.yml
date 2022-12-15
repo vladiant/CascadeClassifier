@@ -61,15 +61,15 @@ jobs:
     - uses: actions/download-artifact@v2
       with:
         name: compile_commands
-    - uses: actions/checkout@v3
 
     - name: Install CppCheck
       run: |
         sudo apt-get update
         sudo apt-get install -y cppcheck
 
-    - name: Run CppCheck    
+    - name: Run CppCheck
       shell: bash   
+      uses: actions/checkout@v3
       run: |
           cppcheck --project=${{github.workspace}}/compile_commands.json \
                    --error-exitcode=1 --std=c++17 \
