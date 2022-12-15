@@ -100,12 +100,12 @@ class CvDTree : public CvStatModel {
   virtual void free_prune_data(bool cut_tree);
   virtual void free_tree();
 
-  CvDTreeNode* root;
+  CvDTreeNode* root{};
   CvMat* var_importance;
   CvDTreeTrainData* data;
-  CvMat train_data_hdr, responses_hdr;
+  CvMat train_data_hdr{}, responses_hdr{};
   cv::Mat train_data_mat, responses_mat;
 
  public:
-  int pruned_tree_idx;
+  int pruned_tree_idx{};
 };

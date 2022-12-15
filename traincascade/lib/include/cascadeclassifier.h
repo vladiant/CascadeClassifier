@@ -85,9 +85,9 @@ public:
 class CvCascadeClassifier
 {
 public:
-    bool train( const std::string _cascadeDirName,
-                const std::string _posFilename,
-                const std::string _negFilename,
+    bool train( const std::string& _cascadeDirName,
+                const std::string& _posFilename,
+                const std::string& _negFilename,
                 int _numPos, int _numNeg,
                 int _precalcValBufSize, int _precalcIdxBufSize,
                 int _numStages,
@@ -98,8 +98,8 @@ public:
                 double acceptanceRatioBreakValue = -1.0 );
 private:
     int predict( int sampleIdx );
-    void save( const std::string cascadeDirName, bool baseFormat = false );
-    bool load( const std::string cascadeDirName );
+    void save( const std::string& cascadeDirName, bool baseFormat = false );
+    bool load( const std::string& cascadeDirName );
     bool updateTrainingSet( double minimumAcceptanceRatio, double& acceptanceRatio );
     int fillPassedSamples( int first, int count, bool isPositive, double requiredAcceptanceRatio, int64& consumed );
 

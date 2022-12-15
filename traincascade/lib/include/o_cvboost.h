@@ -40,7 +40,7 @@ class CvBoost : public CvStatModel {
   virtual void trim_weights();
 
   CvDTreeTrainData* data;
-  CvMat train_data_hdr, responses_hdr;
+  CvMat train_data_hdr{}, responses_hdr{};
   cv::Mat train_data_mat, responses_mat;
   CvBoostParams params;
   CvSeq* weak;

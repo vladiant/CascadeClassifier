@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include <opencv2/core.hpp>
+#include <utility>
+
 
 #include "traincascade_features.h"
 #include "cascadeclassifier.h"
@@ -12,12 +14,12 @@ float calcNormFactor( const Mat& sum, const Mat& sqSum )
 {
     CV_DbgAssert( sum.cols > 3 && sqSum.rows > 3 );
     Rect normrect( 1, 1, sum.cols - 3, sum.rows - 3 );
-    size_t p0, p1, p2, p3;
+    size_t p0 = 0, p1 = 0, p2 = 0, p3 = 0;
     CV_SUM_OFFSETS( p0, p1, p2, p3, normrect, sum.step1() );
     double area = normrect.width * normrect.height;
     const int *sp = sum.ptr<int>();
     int valSum = sp[p0] - sp[p1] - sp[p2] + sp[p3];
-    const double *sqp = sqSum.ptr<double>();
+    const auto *sqp = sqSum.ptr<double>();
     double valSqSum = sqp[p0] - sqp[p1] - sqp[p2] + sqp[p3];
     return (float) sqrt( (double) (area * valSqSum - (double)valSum * valSum) );
 }
@@ -72,7 +74,7 @@ void CvFeatureEvaluator::init(const CvFeatureParams *_featureParams,
 {
     CV_Assert(_maxSampleCount > 0);
     featureParams = (CvFeatureParams *)_featureParams;
-    winSize = _winSize;
+    winSize = std::move(_winSize);
     numFeatures = 0;
     cls.create( (int)_maxSampleCount, 1, CV_32FC1 );
     generateFeatures();

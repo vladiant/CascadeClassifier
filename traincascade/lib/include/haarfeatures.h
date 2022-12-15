@@ -61,7 +61,7 @@ protected:
         struct
         {
             int p0, p1, p2, p3;
-        } fastRect[CV_HAAR_FEATURE_MAX];
+        } fastRect[CV_HAAR_FEATURE_MAX]{};
     };
 
     std::vector<Feature> features;

@@ -40,7 +40,7 @@ void CvLBPEvaluator::generateFeatures()
             for( int w = 1; w <= winSize.width / 3; w++ )
                 for( int h = 1; h <= winSize.height / 3; h++ )
                     if ( (x+3*w <= winSize.width) && (y+3*h <= winSize.height) )
-                        features.push_back( Feature(offset, x, y, w, h ) );
+                        features.emplace_back(offset, x, y, w, h );
     numFeatures = (int)features.size();
 }
 

@@ -17,16 +17,16 @@ int CV_DTREE_CAT_DIR(int idx, const int* subset) {
 
 CvMat* cvPreprocessIndexArray(const CvMat* idx_arr, int data_arr_size,
                               bool check_for_duplicates) {
-  CvMat* idx = 0;
+  CvMat* idx = nullptr;
 
   CV_FUNCNAME("cvPreprocessIndexArray");
 
   __CV_BEGIN__;
 
-  int i, idx_total, idx_selected = 0, step, type, prev = INT_MIN, is_sorted = 1;
-  uchar* srcb = 0;
-  int* srci = 0;
-  int* dsti;
+  int i = 0, idx_total = 0, idx_selected = 0, step = 0, type = 0, prev = INT_MIN, is_sorted = 1;
+  uchar* srcb = nullptr;
+  int* srci = nullptr;
+  int* dsti = nullptr;
 
   if (!CV_IS_MAT(idx_arr))
     CV_ERROR(cv::Error::StsBadArg, "Invalid index array");

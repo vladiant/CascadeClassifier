@@ -6,16 +6,18 @@
 #include <opencv2/imgcodecs.hpp>
 
 #include "imagestorage.h"
-#include <stdio.h>
-#include <iostream>
+#include <cstdio>
 #include <fstream>
+#include <iostream>
+#include <utility>
+
 
 using namespace std;
 using namespace cv;
 
-bool CvCascadeImageReader::create( const string _posFilename, const string _negFilename, Size _winSize )
+bool CvCascadeImageReader::create( const string& _posFilename, const string& _negFilename, Size _winSize )
 {
-    return posReader.create(_posFilename) && negReader.create(_negFilename, _winSize);
+    return posReader.create(_posFilename) && negReader.create(_negFilename, std::move(_winSize));
 }
 
 CvCascadeImageReader::NegReader::NegReader()
@@ -30,7 +32,7 @@ CvCascadeImageReader::NegReader::NegReader()
     round = 0;
 }
 
-bool CvCascadeImageReader::NegReader::create( const string _filename, Size _winSize )
+bool CvCascadeImageReader::NegReader::create( const string& _filename, Size _winSize )
 {
     string str;
     std::ifstream file(_filename.c_str());
@@ -47,7 +49,7 @@ bool CvCascadeImageReader::NegReader::create( const string _filename, Size _winS
     }
     file.close();
 
-    winSize = _winSize;
+    winSize = std::move(_winSize);
     last = round = 0;
     return true;
 }
@@ -125,15 +127,15 @@ bool CvCascadeImageReader::NegReader::get( Mat& _img )
 
 CvCascadeImageReader::PosReader::PosReader()
 {
-    file = 0;
-    vec = 0;
+    file = nullptr;
+    vec = nullptr;
     count = 0;
     vecSize = 0;
     last = 0;
     base = 0;
 }
 
-bool CvCascadeImageReader::PosReader::create( const string _filename )
+bool CvCascadeImageReader::PosReader::create( const string& _filename )
 {
     if ( file )
         fclose( file );

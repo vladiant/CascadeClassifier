@@ -8,7 +8,7 @@
 class CvCascadeImageReader
 {
 public:
-    bool create( const std::string _posFilename, const std::string _negFilename, cv::Size _winSize );
+    bool create( const std::string& _posFilename, const std::string& _negFilename, cv::Size _winSize );
     void restart() { posReader.restart(); }
     bool getNeg(cv::Mat &_img) { return negReader.get( _img ); }
     bool getPos(cv::Mat &_img) { return posReader.get( _img ); }
@@ -19,7 +19,7 @@ private:
     public:
         PosReader();
         virtual ~PosReader();
-        bool create( const std::string _filename );
+        bool create( const std::string& _filename );
         bool get( cv::Mat &_img );
         void restart();
 
@@ -35,7 +35,7 @@ private:
     {
     public:
         NegReader();
-        bool create( const std::string _filename, cv::Size _winSize );
+        bool create( const std::string& _filename, cv::Size _winSize );
         bool get( cv::Mat& _img );
         bool nextImg();
 

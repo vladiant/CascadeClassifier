@@ -20,7 +20,7 @@ void CvHOGEvaluator::init(const CvFeatureParams *_featureParams, int _maxSampleC
     int cols = (_winSize.width + 1) * (_winSize.height + 1);
     for (int bin = 0; bin < N_BINS; bin++)
     {
-        hist.push_back(Mat(_maxSampleCount, cols, CV_32FC1));
+        hist.emplace_back(_maxSampleCount, cols, CV_32FC1);
     }
     normSum.create( (int)_maxSampleCount, cols, CV_32FC1 );
     CvFeatureEvaluator::init( _featureParams, _maxSampleCount, _winSize );
@@ -31,9 +31,11 @@ void CvHOGEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
     CV_DbgAssert( !hist.empty());
     CvFeatureEvaluator::setImage( img, clsLabel, idx );
     vector<Mat> integralHist;
-    for (int bin = 0; bin < N_BINS; bin++)
+    integralHist.reserve(N_BINS);
+
+for (int bin = 0; bin < N_BINS; bin++)
     {
-        integralHist.push_back( Mat(winSize.height + 1, winSize.width + 1, hist[bin].type(), hist[bin].ptr<float>((int)idx)) );
+        integralHist.emplace_back(winSize.height + 1, winSize.width + 1, hist[bin].type(), hist[bin].ptr<float>((int)idx) );
     }
     Mat integralNorm(winSize.height + 1, winSize.width + 1, normSum.type(), normSum.ptr<float>((int)idx));
     integralHistogram(img, integralHist, integralNorm, (int)N_BINS);
@@ -46,9 +48,9 @@ void CvHOGEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
 
 void CvHOGEvaluator::writeFeatures( FileStorage &fs, const Mat& featureMap ) const
 {
-    int featIdx;
-    int componentIdx;
-    const Mat_<int>& featureMap_ = (const Mat_<int>&)featureMap;
+    int featIdx = 0;
+    int componentIdx = 0;
+    const auto& featureMap_ = (const Mat_<int>&)featureMap;
     fs << FEATURES << "[";
     for ( int fi = 0; fi < featureMap.cols; fi++ )
         if ( featureMap_(0, fi) >= 0 )
@@ -66,7 +68,7 @@ void CvHOGEvaluator::generateFeatures()
 {
     int offset = winSize.width + 1;
     Size blockStep;
-    int x, y, t, w, h;
+    int x = 0, y = 0, t = 0, w = 0, h = 0;
 
     for (t = 8; t <= winSize.width/2; t+=8) //t = size of a cell. blocksize = 4*cellSize
     {
@@ -77,7 +79,7 @@ void CvHOGEvaluator::generateFeatures()
         {
             for (y = 0; y <= winSize.height - h; y += blockStep.height)
             {
-                features.push_back(Feature(offset, x, y, t, t));
+                features.emplace_back(offset, x, y, t, t);
             }
         }
         w = 2*t;
@@ -86,7 +88,7 @@ void CvHOGEvaluator::generateFeatures()
         {
             for (y = 0; y <= winSize.height - h; y += blockStep.height)
             {
-                features.push_back(Feature(offset, x, y, t, 2*t));
+                features.emplace_back(offset, x, y, t, 2*t);
             }
         }
         w = 4*t;
@@ -95,7 +97,7 @@ void CvHOGEvaluator::generateFeatures()
         {
             for (y = 0; y <= winSize.height - h; y += blockStep.height)
             {
-                features.push_back(Feature(offset, x, y, 2*t, t));
+                features.emplace_back(offset, x, y, 2*t, t);
             }
         }
     }
@@ -131,9 +133,9 @@ CvHOGEvaluator::Feature::Feature( int offset, int x, int y, int cellW, int cellH
 void CvHOGEvaluator::Feature::write(FileStorage &fs) const
 {
     fs << CC_RECTS << "[";
-    for( int i = 0; i < N_CELLS; i++ )
+    for(const auto & i : rect)
     {
-        fs << "[:" << rect[i].x << rect[i].y << rect[i].width << rect[i].height << "]";
+        fs << "[:" << i.x << i.y << i.width << i.height << "]";
     }
     fs << "]";
 }
@@ -161,7 +163,7 @@ void CvHOGEvaluator::Feature::write(FileStorage &fs, int featComponentIdx) const
 void CvHOGEvaluator::integralHistogram(const Mat &img, vector<Mat> &histogram, Mat &norm, int nbins) const
 {
     CV_Assert( img.type() == CV_8U || img.type() == CV_8UC3 );
-    int x, y, binIdx;
+    int x = 0, y = 0, binIdx = 0;
 
     Size gradSize(img.size());
     Size histSize(histogram[0].size());
@@ -187,14 +189,14 @@ void CvHOGEvaluator::integralHistogram(const Mat &img, vector<Mat> &histogram, M
     Mat Mag(1, width, CV_32F, dbuf + width*2);
     Mat Angle(1, width, CV_32F, dbuf + width*3);
 
-    float angleScale = (float)(nbins/CV_PI);
+    auto angleScale = (float)(nbins/CV_PI);
 
     for( y = 0; y < gradSize.height; y++ )
     {
         const uchar* currPtr = img.ptr(ymap[y]);
         const uchar* prevPtr = img.ptr(ymap[y-1]);
         const uchar* nextPtr = img.ptr(ymap[y+1]);
-        float* gradPtr = grad.ptr<float>(y);
+        auto* gradPtr = grad.ptr<float>(y);
         uchar* qanglePtr = qangle.ptr(y);
 
         for( x = 0; x < width; x++ )
@@ -221,9 +223,9 @@ void CvHOGEvaluator::integralHistogram(const Mat &img, vector<Mat> &histogram, M
     }
     integral(grad, norm, grad.depth());
 
-    float* histBuf;
-    const float* magBuf;
-    const uchar* binsBuf;
+    float* histBuf = nullptr;
+    const float* magBuf = nullptr;
+    const uchar* binsBuf = nullptr;
 
     int binsStep = (int)( qangle.step / sizeof(uchar) );
     int histStep = (int)( histogram[0].step / sizeof(float) );

@@ -5,6 +5,8 @@
 
 #include <opencv2/core.hpp>
 
+#include "math.h"
+
 #include "o_cvcascadeboosttree.h"
 #include "o_cvdtreenode.h"
 #include "o_cvdtreesplit.h"
@@ -36,7 +38,7 @@ void CvCascadeParams::write( FileStorage &fs ) const
     string featureTypeStr = featureType == CvFeatureParams::HAAR ? CC_HAAR :
                             featureType == CvFeatureParams::LBP ? CC_LBP :
                             featureType == CvFeatureParams::HOG ? CC_HOG :
-                            0;
+                            nullptr;
     CV_Assert( !stageTypeStr.empty() );
     fs << CC_FEATURE_TYPE << featureTypeStr;
     fs << CC_HEIGHT << winSize.height;
@@ -132,9 +134,9 @@ bool CvCascadeParams::scanAttr( const string prmName, const string val )
 
 //---------------------------- CascadeClassifier --------------------------------------
 
-bool CvCascadeClassifier::train( const string _cascadeDirName,
-                                const string _posFilename,
-                                const string _negFilename,
+bool CvCascadeClassifier::train( const string& _cascadeDirName,
+                                const string& _posFilename,
+                                const string& _negFilename,
                                 int _numPos, int _numNeg,
                                 int _precalcValBufSize, int _precalcIdxBufSize,
                                 int _numStages,
@@ -145,7 +147,7 @@ bool CvCascadeClassifier::train( const string _cascadeDirName,
                                 double acceptanceRatioBreakValue )
 {
     // Start recording clock ticks for training time output
-    double time = (double)getTickCount();
+    auto time = (double)getTickCount();
 
     if( _cascadeDirName.empty() || _posFilename.empty() || _negFilename.empty() )
         CV_Error( cv::Error::StsBadArg, "_cascadeDirName or _bgfileName or _vecFileName is NULL" );
@@ -206,7 +208,7 @@ bool CvCascadeClassifier::train( const string _cascadeDirName,
 
     double requiredLeafFARate = pow( (double) stageParams->maxFalseAlarm, (double) numStages ) /
                                 (double)stageParams->max_depth;
-    double tempLeafFARate;
+    double tempLeafFARate = NAN;
 
     for( int i = startNumStages; i < numStages; i++ )
     {
@@ -295,10 +297,9 @@ bool CvCascadeClassifier::train( const string _cascadeDirName,
 int CvCascadeClassifier::predict( int sampleIdx )
 {
     CV_DbgAssert( sampleIdx < numPos + numNeg );
-    for (vector< Ptr<CvCascadeBoost> >::iterator it = stageClassifiers.begin();
-        it != stageClassifiers.end();++it )
+    for (auto & stageClassifier : stageClassifiers)
     {
-        if ( (*it)->predict( sampleIdx ) == 0.f )
+        if ( stageClassifier->predict( sampleIdx ) == 0.f )
             return 0;
     }
     return 1;
@@ -372,7 +373,7 @@ void CvCascadeClassifier::writeStages( FileStorage &fs, const Mat& featureMap ) 
     char cmnt[30];
     int i = 0;
     fs << CC_STAGES << "[";
-    for( vector< Ptr<CvCascadeBoost> >::const_iterator it = stageClassifiers.begin();
+    for( auto it = stageClassifiers.begin();
         it != stageClassifiers.end();++it, ++i )
     {
         snprintf( cmnt, sizeof(cmnt), "stage %d", i );
@@ -435,7 +436,7 @@ bool CvCascadeClassifier::readStages( const FileNode &node)
 #define ICV_HAAR_PARENT_NAME            "parent"
 #define ICV_HAAR_NEXT_NAME              "next"
 
-void CvCascadeClassifier::save( const string filename, bool baseFormat )
+void CvCascadeClassifier::save( const string& filename, bool baseFormat )
 {
     FileStorage fs( filename, FileStorage::WRITE );
 
@@ -456,7 +457,7 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
     else
     {
         //char buf[256];
-        CvSeq* weak;
+        CvSeq* weak = nullptr;
         if ( cascadeParams.featureType != CvFeatureParams::HAAR )
             CV_Error( cv::Error::StsBadFunc, "old file format is used for Haar-like features only");
         fs << "{:" ICV_HAAR_TYPE_ID;
@@ -481,7 +482,7 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
                 //sprintf( buf, "tree %d", wi );
                 //CV_CALL( cvWriteComment( fs, buf, 1 ) );
 
-                const CvDTreeNode* tempNode;
+                const CvDTreeNode* tempNode = nullptr;
 
                 inner_nodes_queue.push( tree->get_root() );
                 total_inner_node_idx++;
@@ -493,7 +494,7 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
 
                     fs << "{";
                     fs << ICV_HAAR_FEATURE_NAME << "{";
-                    ((CvHaarEvaluator*)featureEvaluator.get())->writeFeature( fs, tempNode->split->var_idx );
+                    (dynamic_cast<CvHaarEvaluator*>(featureEvaluator.get()))->writeFeature( fs, tempNode->split->var_idx );
                     fs << "}";
 
                     fs << ICV_HAAR_THRESHOLD_NAME << tempNode->split->ord.c;
@@ -531,7 +532,7 @@ void CvCascadeClassifier::save( const string filename, bool baseFormat )
     fs << "}";
 }
 
-bool CvCascadeClassifier::load( const string cascadeDirName )
+bool CvCascadeClassifier::load( const string& cascadeDirName )
 {
     FileStorage fs( cascadeDirName + CC_PARAMS_FILENAME, FileStorage::READ );
     if ( !fs.isOpened() )
@@ -569,9 +570,8 @@ void CvCascadeClassifier::getUsedFeaturesIdxMap( Mat& featureMap )
     featureMap.create( 1, varCount, CV_32SC1 );
     featureMap.setTo(Scalar(-1));
 
-    for( vector< Ptr<CvCascadeBoost> >::const_iterator it = stageClassifiers.begin();
-        it != stageClassifiers.end();++it )
-        (*it)->markUsedFeaturesInMap( featureMap );
+    for(const auto & stageClassifier : stageClassifiers)
+        stageClassifier->markUsedFeaturesInMap( featureMap );
 
     for( int fi = 0, idx = 0; fi < varCount; fi++ )
         if ( featureMap.at<int>(0, fi) >= 0 )

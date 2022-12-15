@@ -37,8 +37,8 @@ struct CvCascadeBoostTrainData : CvDTreeTrainData {
   virtual float getVarValue(int vi, int si);
   void free_train_data() override;
 
-  const CvFeatureEvaluator* featureEvaluator;
+  const CvFeatureEvaluator* featureEvaluator{};
   cv::Mat valCache;  // precalculated feature values (CV_32FC1)
-  CvMat _resp;       // for casting
-  int numPrecalcVal, numPrecalcIdx;
+  CvMat _resp{};       // for casting
+  int numPrecalcVal{}, numPrecalcIdx{};
 };

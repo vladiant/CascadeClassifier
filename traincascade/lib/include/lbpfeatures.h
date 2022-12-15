@@ -32,7 +32,7 @@ protected:
         void write( cv::FileStorage &fs ) const;
 
         cv::Rect rect;
-        int p[16];
+        int p[16]{};
     };
     std::vector<Feature> features;
 
