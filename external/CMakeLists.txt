@@ -20,4 +20,6 @@ ExternalProject_Add(opencv
         -DBUILD_LIST=core,highgui,imgcodecs,imgproc,ml,dnn,videoio,calib3d,objdetect
         -DBUILD_opencv_python2=OFF
         -DBUILD_opencv_python3=OFF
+        -DBUILD_PROTOBUF=OFF
+        -DBUILD_opencv_dnn=OFF
 )
