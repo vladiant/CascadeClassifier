@@ -205,7 +205,7 @@ double CvDTree::calc_node_dir(CvDTreeNode* node) {
 
   if (data->get_var_type(vi) >= 0)  // split on categorical var
   {
-    cv::AutoBuffer<int> inn_buf(n * (!data->have_priors ? 1 : 2));
+    cv::AutoBuffer<int> inn_buf((size_t)n * (!data->have_priors ? 1 : 2));
     int* labels_buf = inn_buf.data();
     const int* labels = data->get_cat_var_data(node, vi, labels_buf);
     const int* subset = node->split->subset;
@@ -555,7 +555,7 @@ CvDTreeSplit* CvDTree::find_split_cat_class(CvDTreeNode* node, int vi,
   int m = data->get_num_classes();
   int _mi = data->cat_count->data.i[ci], mi = _mi;
 
-  int base_size = m * (3 + mi) * sizeof(int) + (mi + 1) * sizeof(double);
+  int base_size = sizeof(int) * m * (3 + mi) + sizeof(double) * (mi + 1);
   if (m > 2 && mi > data->params.max_categories)
     base_size +=
         (m * std::min(data->params.max_categories, n) + mi) * sizeof(int);
@@ -1076,8 +1076,8 @@ void CvDTree::calc_node_value(CvDTreeNode* node) {
   int m = data->get_num_classes();
 
   int base_size = data->is_classifier
-                      ? m * cv_n * sizeof(int)
-                      : 2 * cv_n * sizeof(double) + cv_n * sizeof(int);
+                      ? sizeof(int) * m * cv_n
+                      : sizeof(double) * 2 * cv_n + sizeof(int) * cv_n;
   int ext_size =
       n * (sizeof(int) +
            (data->is_classifier ? sizeof(int) : sizeof(int) + sizeof(float)));
