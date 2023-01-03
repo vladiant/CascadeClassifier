@@ -948,7 +948,7 @@ void CvDTreeTrainData::get_vectors(const CvMat* _subsample_idx, float* values,
     }
   }
 
-  if (missing) memset(missing, 1, count * var_count);
+  if (missing) memset(missing, 1, (size_t)count * var_count);
 
   for (vi = 0; vi < var_count; vi++) {
     int ci = get_var_type(vi);
