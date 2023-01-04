@@ -4,6 +4,7 @@
 [![Windows](https://github.com/vladiant/CascadeClassifier/actions/workflows/windows.yml/badge.svg)](https://github.com/vladiant/CascadeClassifier/actions/workflows/windows.yml)
 [![macOS](https://github.com/vladiant/CascadeClassifier/actions/workflows/macos.yml/badge.svg)](https://github.com/vladiant/CascadeClassifier/actions/workflows/macos.yml)
 [![Static Check](https://github.com/vladiant/CascadeClassifier/actions/workflows/static_check.yml/badge.svg)](https://github.com/vladiant/CascadeClassifier/actions/workflows/static_check.yml)
+[![CodeQL](https://github.com/vladiant/CascadeClassifier/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/vladiant/CascadeClassifier/actions/workflows/codeql-analysis.yml)
 ## About
 
 Haar Cascade Classifier implementation, tools and docs
