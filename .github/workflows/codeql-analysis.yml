@@ -11,7 +11,11 @@
 #
 name: CodeQL
 
-on: push
+on: 
+  push:
+
+  schedule:
+    - cron: '0 0 11 * *'
 
 env:
   BUILD_TYPE: Release
