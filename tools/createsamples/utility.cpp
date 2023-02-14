@@ -1047,7 +1047,7 @@ void cvCreateTestSamples(const char* infoname, const char* imgfilename,
     return;
   }
   if (icvStartSampleDistortion(imgfilename, bgcolor, bgthreshold, &data)) {
-    char fullname[PATH_MAX];
+    char fullname[PATH_MAX]{};
     char* filename;
     FILE* info;
 
@@ -1063,6 +1063,7 @@ void cvCreateTestSamples(const char* infoname, const char* imgfilename,
 
       info = fopen(infoname, "w");
       strcpy(fullname, infoname);
+      fullname[PATH_MAX-1] = 0;
       filename = strrchr(fullname, '\\');
       if (filename == NULL) {
         filename = strrchr(fullname, '/');
@@ -1098,7 +1099,7 @@ void cvCreateTestSamples(const char* infoname, const char* imgfilename,
                                 inverse, maxintensitydev, maxxangle, maxyangle,
                                 maxzangle, 1, 0.0, 0.0, &data);
 
-        sprintf(filename, "%04d_%04d_%04d_%04d_%04d.jpg", (i + 1), x, y, width,
+        snprintf(filename, strlen(filename), "%04d_%04d_%04d_%04d_%04d.jpg", (i + 1), x, y, width,
                 height);
 
         if (info) {
