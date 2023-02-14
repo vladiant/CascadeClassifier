@@ -467,7 +467,7 @@ void CvCascadeClassifier::save( const string& filename, bool baseFormat )
         for( size_t si = 0; si < stageClassifiers.size(); si++ )
         {
             fs << "{"; //stage
-            /*sprintf( buf, "stage %d", si );
+            /*snprintf( buf, sizeof(buf), "stage %d", si );
             CV_CALL( cvWriteComment( fs, buf, 1 ) );*/
             weak = stageClassifiers[si]->get_weak_predictors();
             fs << ICV_HAAR_TREES_NAME << "[";
@@ -479,7 +479,7 @@ void CvCascadeClassifier::save( const string& filename, bool baseFormat )
                 CvCascadeBoostTree* tree = *((CvCascadeBoostTree**) cvGetSeqElem( weak, wi ));
 
                 fs << "[";
-                //sprintf( buf, "tree %d", wi );
+                //snprintf( buf, sizeof(buf), "tree %d", wi );
                 //CV_CALL( cvWriteComment( fs, buf, 1 ) );
 
                 const CvDTreeNode* tempNode = nullptr;
