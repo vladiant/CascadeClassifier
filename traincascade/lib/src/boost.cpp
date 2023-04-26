@@ -7,7 +7,7 @@
 #include <opencv2/ml/ml.hpp>
 
 #include "cascadeclassifier.h"
-#include "math.h"
+#include <cmath>
 
 #include "o_cvcascadeboosttree.h"
 #include "o_cvcascadeboosttraindata.h"
@@ -19,7 +19,6 @@ using cv::Point;
 using cv::FileStorage;
 using cv::Rect;
 using cv::FileNode;
-using cv::FileNodeIterator;
 
 
 using namespace std;

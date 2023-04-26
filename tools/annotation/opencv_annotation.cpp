@@ -195,8 +195,8 @@ vector<Rect> get_annotations(Mat input_image) {
 
     // Draw all the current rectangles onto the top image and make sure that the
     // global image is linked
-    for (int i = 0; i < (int)current_annotations.size(); i++) {
-      rectangle(temp_image, current_annotations[i], Scalar(0, 255, 0), 1);
+    for (auto & current_annotation : current_annotations) {
+      rectangle(temp_image, current_annotation, Scalar(0, 255, 0), 1);
     }
     image = temp_image;
 
@@ -234,8 +234,8 @@ int main(int argc, const char** argv) {
          << endl;
     return 0;
   }
-  string image_folder(parser.get<string>("images"));
-  string annotations_file(parser.get<string>("annotations"));
+  auto image_folder(parser.get<string>("images"));
+  auto annotations_file(parser.get<string>("annotations"));
   if (image_folder.empty() || annotations_file.empty()) {
     parser.printMessage();
     cerr << "TIP: Use absolute paths to avoid any problems with the software!"
@@ -265,9 +265,9 @@ int main(int argc, const char** argv) {
   // Loop through each image stored in the images folder
   // Create and temporarily store the annotations
   // At the end write everything to the annotations file
-  for (size_t i = 0; i < filenames.size(); i++) {
+  for (auto & filename : filenames) {
     // Read in an image
-    Mat current_image = imread(filenames[i]);
+    Mat current_image = imread(filename);
     bool const resize_bool =
         (maxWindowHeight > 0) && (current_image.rows > maxWindowHeight);
 
@@ -289,16 +289,16 @@ int main(int argc, const char** argv) {
     // to original dimensions
     vector<Rect> current_annotations = get_annotations(current_image);
     if (resize_bool) {
-      for (int j = 0; j < (int)current_annotations.size(); j++) {
-        current_annotations[j].x = current_annotations[j].x * resizeFactor;
-        current_annotations[j].y = current_annotations[j].y * resizeFactor;
-        current_annotations[j].width =
-            current_annotations[j].width * resizeFactor;
-        current_annotations[j].height =
-            current_annotations[j].height * resizeFactor;
+      for (auto & current_annotation : current_annotations) {
+        current_annotation.x = current_annotation.x * resizeFactor;
+        current_annotation.y = current_annotation.y * resizeFactor;
+        current_annotation.width =
+            current_annotation.width * resizeFactor;
+        current_annotation.height =
+            current_annotation.height * resizeFactor;
       }
     }
-    annotations[filenames[i]] = current_annotations;
+    annotations[filename] = current_annotations;
 
     // Check if the ESC key was hit, then exit earlier then expected
     if (stop) {
@@ -318,12 +318,10 @@ int main(int argc, const char** argv) {
   }
 
   // Store the annotations, write to the output file
-  for (map<String, vector<Rect> >::iterator it = annotations.begin();
-       it != annotations.end(); it++) {
-    vector<Rect>& anno = it->second;
-    output << it->first << " " << anno.size();
-    for (size_t j = 0; j < anno.size(); j++) {
-      Rect temp = anno[j];
+  for (auto & annotation : annotations) {
+    vector<Rect>& anno = annotation.second;
+    output << annotation.first << " " << anno.size();
+    for (auto temp : anno) {
       output << " " << temp.x << " " << temp.y << " " << temp.width << " "
              << temp.height;
     }

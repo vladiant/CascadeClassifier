@@ -1,6 +1,6 @@
 #include "o_cvboostree.h"
 
-#include "math.h"
+#include <cmath>
 
 #include "o_cvboost.h"
 #include "o_cvdtreenode.h"

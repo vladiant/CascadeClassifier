@@ -6,7 +6,7 @@
 #include <queue>
 
 #include "cascadeclassifier.h"
-#include "math.h"
+#include <cmath>
 
 #include "o_cvcascadeboosttraindata.h"
 #include "o_cvdtreenode.h"
@@ -175,7 +175,7 @@ void CvCascadeBoostTree::split_node_data(CvDTreeNode* node) {
   size_t length_buf_row = data->get_length_subbuf();
   cv::AutoBuffer<uchar> inn_buf(n * (3 * sizeof(int) + sizeof(float)));
   int* tempBuf = (int*)inn_buf.data();
-  bool splitInputData = 0;
+  bool splitInputData = false;
 
   complete_node_dir(node);
 

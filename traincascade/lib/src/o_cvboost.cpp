@@ -2,7 +2,7 @@
 
 #include <opencv2/ml/ml.hpp>
 
-#include "math.h"
+#include <cmath>
 
 #include "o_cvboostree.h"
 #include "o_cvdtreeparams.h"

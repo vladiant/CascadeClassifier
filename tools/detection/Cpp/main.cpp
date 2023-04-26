@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  const std::string image_name = parser.get<std::string>("image");
+  const auto image_name = parser.get<std::string>("image");
 
   cv::Mat img = cv::imread(image_name, cv::IMREAD_COLOR);
   if (img.empty()) {
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
   cv::Mat gray;
   cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
 
-  const std::string cascade_file = parser.get<std::string>("descriptor");
+  const auto cascade_file = parser.get<std::string>("descriptor");
   if (!std::filesystem::exists(cascade_file)) {
     std::cout << "Cascade descriptor file not found: " << cascade_file << '\n';
     return EXIT_FAILURE;
