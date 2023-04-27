@@ -5,7 +5,7 @@
 
 #include <opencv2/core.hpp>
 
-#include "math.h"
+#include <cmath>
 
 #include "o_cvcascadeboosttree.h"
 #include "o_cvdtreenode.h"

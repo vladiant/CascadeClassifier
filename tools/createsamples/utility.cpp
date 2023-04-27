@@ -464,7 +464,7 @@ static void icvRandomQuad(int width, int height, double quad[4][2],
   }
 }
 
-typedef struct CvSampleDistortionData {
+using CvSampleDistortionData = struct CvSampleDistortionData {
   Mat src;
   Mat erode;
   Mat dilate;
@@ -474,7 +474,7 @@ typedef struct CvSampleDistortionData {
   int dx;
   int dy;
   int bgcolor;
-} CvSampleDistortionData;
+};
 
 #if defined CV_OPENMP && (defined _MSC_VER || defined CV_ICC)
 #define CV_OPENMP 1
@@ -482,15 +482,15 @@ typedef struct CvSampleDistortionData {
 #undef CV_OPENMP
 #endif
 
-typedef struct CvBackgroundData {
+using CvBackgroundData = struct CvBackgroundData {
   int count;
   char** filename;
   int last;
   int round;
   Size winsize;
-} CvBackgroundData;
+};
 
-typedef struct CvBackgroundReader {
+using CvBackgroundReader = struct CvBackgroundReader {
   Mat src;
   Mat img;
   Point offset;
@@ -498,19 +498,19 @@ typedef struct CvBackgroundReader {
   float scalefactor;
   float stepfactor;
   Point point;
-} CvBackgroundReader;
+};
 
 /*
  * Background reader
  * Created in each thread
  */
-CvBackgroundReader* cvbgreader = NULL;
+CvBackgroundReader* cvbgreader = nullptr;
 
 #if defined CV_OPENMP
 #pragma omp threadprivate(cvbgreader)
 #endif
 
-CvBackgroundData* cvbgdata = NULL;
+CvBackgroundData* cvbgdata = nullptr;
 
 static int icvStartSampleDistortion(const char* imgfilename, int bgcolor,
                                     int bgthreshold,
@@ -531,7 +531,7 @@ static int icvStartSampleDistortion(const char* imgfilename, int bgcolor,
     /* make mask image */
     for (r = 0; r < data->mask.rows; r++) {
       for (c = 0; c < data->mask.cols; c++) {
-        uchar& pmask = data->mask.at<uchar>(r, c);
+        auto& pmask = data->mask.at<uchar>(r, c);
         if (bgcolor - bgthreshold <= (int)pmask &&
             (int)pmask <= bgcolor + bgthreshold) {
           pmask = (uchar)0;
@@ -546,13 +546,13 @@ static int icvStartSampleDistortion(const char* imgfilename, int bgcolor,
     dilate(data->src, data->dilate, Mat());
     for (r = 0; r < data->mask.rows; r++) {
       for (c = 0; c < data->mask.cols; c++) {
-        uchar& pmask = data->mask.at<uchar>(r, c);
+        auto& pmask = data->mask.at<uchar>(r, c);
         if (pmask == 0) {
-          uchar& psrc = data->src.at<uchar>(r, c);
-          uchar& perode = data->erode.at<uchar>(r, c);
-          uchar& pdilate = data->dilate.at<uchar>(r, c);
-          uchar de = (uchar)(bgcolor - perode);
-          uchar dd = (uchar)(pdilate - bgcolor);
+          auto& psrc = data->src.at<uchar>(r, c);
+          auto& perode = data->erode.at<uchar>(r, c);
+          auto& pdilate = data->dilate.at<uchar>(r, c);
+          auto de = (uchar)(bgcolor - perode);
+          auto dd = (uchar)(pdilate - bgcolor);
           if (de >= dd && de > bgthreshold) {
             psrc = perode;
           }
@@ -658,9 +658,9 @@ static void icvPlaceDistortedSample(Mat background, int inverse,
 
   for (r = 0; r < img.rows; r++) {
     for (c = 0; c < img.cols; c++) {
-      uchar& pbg = background.at<uchar>(r, c);
-      uchar& palpha = maskimg.at<uchar>(r, c);
-      uchar chartmp =
+      auto& pbg = background.at<uchar>(r, c);
+      auto& palpha = maskimg.at<uchar>(r, c);
+      auto chartmp =
           (uchar)MAX(0, MIN(255, forecolordev + img.at<uchar>(r, c)));
       if (inverse) {
         chartmp ^= 0xFF;
@@ -672,24 +672,24 @@ static void icvPlaceDistortedSample(Mat background, int inverse,
 
 static CvBackgroundData* icvCreateBackgroundData(const char* filename,
                                                  Size winsize) {
-  CvBackgroundData* data = NULL;
+  CvBackgroundData* data = nullptr;
 
-  const char* dir = NULL;
+  const char* dir = nullptr;
   char full[PATH_MAX];
-  char* imgfilename = NULL;
+  char* imgfilename = nullptr;
   size_t datasize = 0;
   int count = 0;
-  FILE* input = NULL;
-  char* tmp = NULL;
+  FILE* input = nullptr;
+  char* tmp = nullptr;
   int len = 0;
 
-  CV_Assert(filename != NULL);
+  CV_Assert(filename != nullptr);
 
   dir = strrchr(filename, '\\');
-  if (dir == NULL) {
+  if (dir == nullptr) {
     dir = strrchr(filename, '/');
   }
-  if (dir == NULL) {
+  if (dir == nullptr) {
     imgfilename = &(full[0]);
   } else {
     strncpy(&(full[0]), filename, (dir - filename + 1));
@@ -697,7 +697,7 @@ static CvBackgroundData* icvCreateBackgroundData(const char* filename,
   }
 
   input = fopen(filename, "r");
-  if (input != NULL) {
+  if (input != nullptr) {
     count = 0;
     datasize = 0;
 
@@ -751,7 +751,7 @@ static CvBackgroundData* icvCreateBackgroundData(const char* filename,
 }
 
 static CvBackgroundReader* icvCreateBackgroundReader() {
-  CvBackgroundReader* reader = NULL;
+  CvBackgroundReader* reader = nullptr;
 
   reader = new CvBackgroundReader;
   reader->scale = 1.0F;
@@ -768,7 +768,7 @@ static void icvGetNextFromBackgroundData(CvBackgroundData* data,
   int i = 0;
   Point offset;
 
-  CV_Assert(data != NULL && reader != NULL);
+  CV_Assert(data != nullptr && reader != nullptr);
 
 #ifdef CV_OPENMP
 #pragma omp critical(c_background_data)
@@ -850,7 +850,7 @@ static void icvGetNextFromBackgroundData(CvBackgroundData* data,
  */
 static void icvGetBackgroundImage(CvBackgroundData* data,
                                   CvBackgroundReader* reader, Mat& img) {
-  CV_Assert(data != NULL && reader != NULL);
+  CV_Assert(data != nullptr && reader != nullptr);
 
   if (reader->img.empty()) {
     icvGetNextFromBackgroundData(data, reader);
@@ -897,7 +897,7 @@ static void icvGetBackgroundImage(CvBackgroundData* data,
  * return 1 on success, 0 otherwise.
  */
 static int icvInitBackgroundReaders(const char* filename, Size winsize) {
-  if (cvbgdata == NULL && filename != NULL) {
+  if (cvbgdata == nullptr && filename != nullptr) {
     cvbgdata = icvCreateBackgroundData(filename, winsize);
   }
 
@@ -910,14 +910,14 @@ static int icvInitBackgroundReaders(const char* filename, Size winsize) {
 #pragma omp critical(c_create_bg_data)
 #endif /* CV_OPENMP */
       {
-        if (cvbgreader == NULL) {
+        if (cvbgreader == nullptr) {
           cvbgreader = icvCreateBackgroundReader();
         }
       }
     }
   }
 
-  return (cvbgdata != NULL);
+  return (cvbgdata != nullptr);
 }
 
 /*
@@ -935,16 +935,16 @@ static void icvDestroyBackgroundReaders() {
 #pragma omp critical(c_release_bg_data)
 #endif /* CV_OPENMP */
     {
-      if (cvbgreader != NULL) {
+      if (cvbgreader != nullptr) {
         delete cvbgreader;
-        cvbgreader = NULL;
+        cvbgreader = nullptr;
       }
     }
   }
 
-  if (cvbgdata != NULL) {
+  if (cvbgdata != nullptr) {
     fastFree(cvbgdata);
-    cvbgdata = NULL;
+    cvbgdata = nullptr;
   }
 }
 
@@ -956,23 +956,23 @@ void cvCreateTrainingSamples(const char* filename, const char* imgfilename,
                              int showsamples, int winwidth, int winheight) {
   CvSampleDistortionData data;
 
-  CV_Assert(filename != NULL);
-  CV_Assert(imgfilename != NULL);
+  CV_Assert(filename != nullptr);
+  CV_Assert(imgfilename != nullptr);
 
   if (!icvMkDir(filename)) {
     fprintf(stderr, "Unable to create output file: %s\n", filename);
     return;
   }
   if (icvStartSampleDistortion(imgfilename, bgcolor, bgthreshold, &data)) {
-    FILE* output = NULL;
+    FILE* output = nullptr;
 
     output = fopen(filename, "wb");
-    if (output != NULL) {
+    if (output != nullptr) {
       int i;
       int inverse;
 
       const int hasbg =
-          (bgfilename != NULL &&
+          (bgfilename != nullptr &&
            icvInitBackgroundReaders(bgfilename, Size(winwidth, winheight)));
 
       Mat sample(winheight, winwidth, CV_8UC1);
@@ -1035,9 +1035,9 @@ void cvCreateTestSamples(const char* infoname, const char* imgfilename,
                          double maxscale) {
   CvSampleDistortionData data;
 
-  CV_Assert(infoname != NULL);
-  CV_Assert(imgfilename != NULL);
-  CV_Assert(bgfilename != NULL);
+  CV_Assert(infoname != nullptr);
+  CV_Assert(imgfilename != nullptr);
+  CV_Assert(bgfilename != nullptr);
 
   if (!icvMkDir(infoname)) {
 #if CV_VERBOSE
@@ -1065,10 +1065,10 @@ void cvCreateTestSamples(const char* infoname, const char* imgfilename,
       strcpy(fullname, infoname);
       fullname[PATH_MAX-1] = 0;
       filename = strrchr(fullname, '\\');
-      if (filename == NULL) {
+      if (filename == nullptr) {
         filename = strrchr(fullname, '/');
       }
-      if (filename == NULL) {
+      if (filename == nullptr) {
         filename = fullname;
       } else {
         filename++;
@@ -1136,8 +1136,8 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
   int x, y, width, height;
   int total;
 
-  CV_Assert(infoname != NULL);
-  CV_Assert(vecfilename != NULL);
+  CV_Assert(infoname != nullptr);
+  CV_Assert(vecfilename != nullptr);
 
   total = 0;
   if (!icvMkDir(vecfilename)) {
@@ -1149,7 +1149,7 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
   }
 
   info = fopen(infoname, "r");
-  if (info == NULL) {
+  if (info == nullptr) {
 #if CV_VERBOSE
     fprintf(stderr, "Unable to open file: %s\n", infoname);
 #endif /* CV_VERBOSE */
@@ -1158,7 +1158,7 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
   }
 
   vec = fopen(vecfilename, "wb");
-  if (vec == NULL) {
+  if (vec == nullptr) {
 #if CV_VERBOSE
     fprintf(stderr, "Unable to open file: %s\n", vecfilename);
 #endif /* CV_VERBOSE */
@@ -1176,10 +1176,10 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
 
   strcpy(fullname, infoname);
   filename = strrchr(fullname, '\\');
-  if (filename == NULL) {
+  if (filename == nullptr) {
     filename = strrchr(fullname, '/');
   }
-  if (filename == NULL) {
+  if (filename == nullptr) {
     filename = fullname;
   } else {
     filename++;
@@ -1230,12 +1230,12 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
   return total;
 }
 
-typedef struct CvVecFile {
+using CvVecFile = struct CvVecFile {
   FILE* input;
   int count;
   int vecsize;
   int last;
-} CvVecFile;
+};
 
 static int icvGetTraininDataFromVec(Mat& img, CvVecFile& userdata) {
   AutoBuffer<short> vector(userdata.vecsize);
@@ -1272,7 +1272,7 @@ void cvShowVecSamples(const char* filename, int winwidth, int winheight,
   tmp = 0;
   file.input = fopen(filename, "rb");
 
-  if (file.input != NULL) {
+  if (file.input != nullptr) {
     size_t elements_read1 =
         fread(&file.count, sizeof(file.count), 1, file.input);
     size_t elements_read2 =

@@ -1,6 +1,6 @@
 #include "o_cvdtree.h"
 
-#include "math.h"
+#include <cmath>
 
 #include "o_blockedrange.h"
 #include "o_cvdtreenode.h"
@@ -1341,7 +1341,7 @@ void CvDTree::split_node_data(CvDTreeNode* node) {
     nl += d ^ 1;
   }
 
-  bool split_input_data = 0;
+  bool split_input_data = false;
   node->left = left = data->new_node(node, nl, new_buf_idx, node->offset);
   node->right = right =
       data->new_node(node, nr, new_buf_idx, node->offset + nl);

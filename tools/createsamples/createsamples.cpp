@@ -65,10 +65,10 @@ using namespace std;
 int main(int argc, char* argv[]) {
   int i = 0;
   char* nullname = (char*)"(NULL)";
-  char* vecname = NULL;    /* .vec file name */
-  char* infoname = NULL;   /* file name with marked up image descriptions */
-  char* imagename = NULL;  /* single sample image */
-  char* bgfilename = NULL; /* background */
+  char* vecname = nullptr;    /* .vec file name */
+  char* infoname = nullptr;   /* file name with marked up image descriptions */
+  char* imagename = nullptr;  /* single sample image */
+  char* bgfilename = nullptr; /* background */
   int num = 1000;
   int bgcolor = 0;
   int bgthreshold = 80;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
       showsamples = 1;
       if (i + 1 < argc && strlen(argv[i + 1]) > 0 && argv[i + 1][0] != '-') {
         double d;
-        d = strtod(argv[i + 1], 0);
+        d = strtod(argv[i + 1], nullptr);
         if (d != -HUGE_VAL && d != HUGE_VAL && d > 0) scale = d;
         ++i;
       }
@@ -155,10 +155,10 @@ int main(int argc, char* argv[]) {
 
   cv::setRNGSeed(rngseed);
 
-  printf("Info file name: %s\n", ((infoname == NULL) ? nullname : infoname));
-  printf("Img file name: %s\n", ((imagename == NULL) ? nullname : imagename));
-  printf("Vec file name: %s\n", ((vecname == NULL) ? nullname : vecname));
-  printf("BG  file name: %s\n", ((bgfilename == NULL) ? nullname : bgfilename));
+  printf("Info file name: %s\n", ((infoname == nullptr) ? nullname : infoname));
+  printf("Img file name: %s\n", ((imagename == nullptr) ? nullname : imagename));
+  printf("Vec file name: %s\n", ((vecname == nullptr) ? nullname : vecname));
+  printf("BG  file name: %s\n", ((bgfilename == nullptr) ? nullname : bgfilename));
   printf("Num: %d\n", num);
   printf("BG color: %d\n", bgcolor);
   printf("BG threshold: %d\n", bgthreshold);

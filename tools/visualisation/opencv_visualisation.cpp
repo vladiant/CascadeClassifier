@@ -100,8 +100,8 @@ int main(int argc, const char** argv) {
     printLimits();
     return 0;
   }
-  string model(parser.get<string>("model"));
-  string output_folder(parser.get<string>("data"));
+  auto model(parser.get<string>("model"));
+  auto output_folder(parser.get<string>("data"));
   string image_ref = (parser.get<string>("image"));
   if (model.empty() || image_ref.empty()) {
     parser.printMessage();
@@ -243,8 +243,7 @@ int main(int argc, const char** argv) {
         Mat single_feature = reference_image.clone();
         resize(single_feature, single_feature, Size(), resize_storage_factor,
                resize_storage_factor, INTER_LINEAR_EXACT);
-        for (int i = 0; i < (int)current_rects.size(); i++) {
-          rect_data local = current_rects[i];
+        for (auto local : current_rects) {
           if (draw_planes) {
             if (local.weight >= 0) {
               rectangle(single_feature,
