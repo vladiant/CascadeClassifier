@@ -53,6 +53,8 @@ direct,
  */
 
 #include <cmath>
+
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -137,7 +139,7 @@ int main(int argc, char* argv[]) {
     } else if (!strcmp(argv[i], "-show")) {
       showsamples = 1;
       if (i + 1 < argc && strlen(argv[i + 1]) > 0 && argv[i + 1][0] != '-') {
-        double d;
+        double d = NAN;
         d = strtod(argv[i + 1], nullptr);
         if (d != -HUGE_VAL && d != HUGE_VAL && d > 0) scale = d;
         ++i;
@@ -197,7 +199,7 @@ int main(int argc, char* argv[]) {
 
     printf("Done\n");
   } else if (infoname && vecname) {
-    int total;
+    int total = 0;
 
     printf("Create training samples from images collection...\n");
 

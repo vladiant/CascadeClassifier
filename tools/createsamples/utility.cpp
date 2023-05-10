@@ -48,6 +48,7 @@ direct,
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
+#include <cmath>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -81,14 +82,14 @@ using namespace cv;
 
 static int icvMkDir(const char* filename) {
   char path[PATH_MAX];
-  char* p;
-  int pos;
+  char* p = nullptr;
+  int pos = 0;
 
 #ifdef _WIN32
   struct _stat st;
 #else  /* _WIN32 */
-  struct stat st;
-  mode_t mode;
+  struct stat st{};
+  mode_t mode = 0;
 
   mode = 0755;
 #endif /* _WIN32 */
@@ -125,8 +126,8 @@ static int icvMkDir(const char* filename) {
 }
 
 static void icvWriteVecHeader(FILE* file, int count, int width, int height) {
-  int vecsize;
-  short tmp;
+  int vecsize = 0;
+  short tmp = 0;
 
   /* number of samples */
   fwrite(&count, sizeof(count), 1, file);
@@ -185,7 +186,7 @@ static void cvGetPerspectiveTransform(Size src_size, double quad[4][2],
   Mat B(8, 1, CV_64FC1, b);
   Mat X(8, 1, CV_64FC1, coeffs);
 
-  int i;
+  int i = 0;
   for (i = 0; i < 4; ++i) {
     a[i][0] = quad[i][0];
     a[i][1] = quad[i][1];
@@ -234,11 +235,11 @@ static void cvWarpPerspective(Mat src, Mat dst, double quad[4][2]) {
   int next_left = 0;
   double y_min = 0;
   double y_max = 0;
-  double k_left, b_left, k_right, b_right;
+  double k_left = NAN, b_left = NAN, k_right = NAN, b_right = NAN;
 
   double d = 0;
   int direction = 0;
-  int i;
+  int i = 0;
 
   if (src.type() != CV_8UC1 || src.dims != 2) {
     CV_Error(Error::StsBadArg,
@@ -332,7 +333,7 @@ static void cvWarpPerspective(Mat src, Mat dst, double quad[4][2]) {
             (q[right][1] - q[next_right][1]);
 
   for (;;) {
-    int x, y;
+    int x = 0, y = 0;
 
     y_max = MIN(q[next_left][1], q[next_right][1]);
 
@@ -358,7 +359,7 @@ static void cvWarpPerspective(Mat src, Mat dst, double quad[4][2]) {
         double delta_x = src_x - isrc_x;
         double delta_y = src_y - isrc_y;
 
-        int i00, i10, i01, i11;
+        int i00 = 0, i10 = 0, i01 = 0, i11 = 0;
         i00 = i10 = i01 = i11 = (int)fill_value;
 
         /* linear interpolation using 2x2 neighborhood */
@@ -421,14 +422,14 @@ static void icvRandomQuad(int width, int height, double quad[4][2],
   double distfactor = 3.0;
   double distfactor2 = 1.0;
 
-  double halfw, halfh;
-  int i;
+  double halfw = NAN, halfh = NAN;
+  int i = 0;
 
   double rotVectData[3];
   double vectData[3];
   double rotMatData[9];
 
-  double d;
+  double d = NAN;
 
   Mat rotVect(3, 1, CV_64FC1, &rotVectData[0]);
   Mat rotMat(3, 3, CV_64FC1, &rotMatData[0]);
@@ -471,9 +472,9 @@ using CvSampleDistortionData = struct CvSampleDistortionData {
   Mat mask;
   Mat img;
   Mat maskimg;
-  int dx;
-  int dy;
-  int bgcolor;
+  int dx{};
+  int dy{};
+  int bgcolor{};
 };
 
 #if defined CV_OPENMP && (defined _MSC_VER || defined CV_ICC)
@@ -494,9 +495,9 @@ using CvBackgroundReader = struct CvBackgroundReader {
   Mat src;
   Mat img;
   Point offset;
-  float scale;
-  float scalefactor;
-  float stepfactor;
+  float scale{};
+  float scalefactor{};
+  float stepfactor{};
   Point point;
 };
 
@@ -518,7 +519,7 @@ static int icvStartSampleDistortion(const char* imgfilename, int bgcolor,
   memset(data, 0, sizeof(*data));
   data->src = imread(imgfilename, IMREAD_GRAYSCALE);
   if (!(data->src.empty()) && data->src.type() == CV_8UC1) {
-    int r, c;
+    int r = 0, c = 0;
 
     data->dx = data->src.cols / 2;
     data->dy = data->src.rows / 2;
@@ -583,14 +584,14 @@ static void icvPlaceDistortedSample(Mat background, int inverse,
                                     double maxscalef,
                                     CvSampleDistortionData* data) {
   double quad[4][2];
-  int r, c;
-  int forecolordev;
-  float scale;
+  int r = 0, c = 0;
+  int forecolordev = 0;
+  float scale = NAN;
 
   Rect cr;
   Rect roi;
 
-  double xshift, yshift, randscale;
+  double xshift = NAN, yshift = NAN, randscale = NAN;
 
   icvRandomQuad(data->src.cols, data->src.rows, quad, maxxangle, maxyangle,
                 maxzangle);
@@ -968,8 +969,8 @@ void cvCreateTrainingSamples(const char* filename, const char* imgfilename,
 
     output = fopen(filename, "wb");
     if (output != nullptr) {
-      int i;
-      int inverse;
+      int i = 0;
+      int inverse = 0;
 
       const int hasbg =
           (bgfilename != nullptr &&
@@ -1048,14 +1049,14 @@ void cvCreateTestSamples(const char* infoname, const char* imgfilename,
   }
   if (icvStartSampleDistortion(imgfilename, bgcolor, bgthreshold, &data)) {
     char fullname[PATH_MAX]{};
-    char* filename;
-    FILE* info;
+    char* filename = nullptr;
+    FILE* info = nullptr;
 
     if (icvInitBackgroundReaders(bgfilename, Size(10, 10))) {
-      int i;
-      int x, y, width, height;
-      float scale;
-      int inverse;
+      int i = 0;
+      int x = 0, y = 0, width = 0, height = 0;
+      float scale = NAN;
+      int inverse = 0;
 
       if (showsamples) {
         namedWindow("Image", WINDOW_AUTOSIZE);
@@ -1126,15 +1127,15 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
                                     int showsamples, int winwidth,
                                     int winheight) {
   char fullname[PATH_MAX];
-  char* filename;
+  char* filename = nullptr;
 
-  FILE* info;
-  FILE* vec;
-  int line;
-  int error;
-  int i;
-  int x, y, width, height;
-  int total;
+  FILE* info = nullptr;
+  FILE* vec = nullptr;
+  int line = 0;
+  int error = 0;
+  int i = 0;
+  int x = 0, y = 0, width = 0, height = 0;
+  int total = 0;
 
   CV_Assert(infoname != nullptr);
   CV_Assert(vecfilename != nullptr);
@@ -1187,7 +1188,7 @@ int cvCreateTrainingSamplesFromInfo(const char* infoname,
 
   for (line = 1, error = 0, total = 0; total < num; line++) {
     Mat src;
-    int count;
+    int count = 0;
 
     if (fscanf(info, "%s %d", filename, &count) == 2) {
       src = imread(fullname, IMREAD_GRAYSCALE);
@@ -1266,8 +1267,8 @@ static int icvGetTraininDataFromVec(Mat& img, CvVecFile& userdata) {
 void cvShowVecSamples(const char* filename, int winwidth, int winheight,
                       double scale) {
   CvVecFile file;
-  short tmp;
-  int i;
+  short tmp = 0;
+  int i = 0;
 
   tmp = 0;
   file.input = fopen(filename, "rb");
