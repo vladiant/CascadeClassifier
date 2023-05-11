@@ -202,7 +202,7 @@ int main(int argc, const char** argv) {
       FileNode rectangles = (*it_features)["rects"];
       int nrects = (int)rectangles.size();
       for (int k = 0; k < nrects; k++) {
-        rect_data current_data;
+        rect_data current_data{};
         FileNode single_rect = rectangles[k];
         current_data.x = (int)single_rect[0];
         current_data.y = (int)single_rect[1];
