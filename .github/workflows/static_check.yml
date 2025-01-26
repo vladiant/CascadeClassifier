@@ -73,7 +73,7 @@ jobs:
     - name: Run CppCheck
       shell: bash   
       run: |
-          cppcheck --project=${{github.workspace}}/compile_commands.json \
+          cppcheck --cppcheck-build-dir=${{github.workspace}} \
                    --std=c++17 \
                    --output-file=${{github.workspace}}/cppcheck-report.txt .
 
