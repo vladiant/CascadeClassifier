@@ -1836,9 +1836,7 @@ CvDTreeNode* CvDTree::predict(const CvMat* _sample, const CvMat* _missing,
               CV_Error(CV_StsBadArg,
                        "one of input categorical variable is not an integer");
 
-            int sh = 0;
             while (a < b) {
-              sh++;
               c = (a + b) >> 1;
               if (ival < cmap[c])
                 b = c;

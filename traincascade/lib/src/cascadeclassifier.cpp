@@ -260,7 +260,7 @@ bool CvCascadeClassifier::train( const string& _cascadeDirName,
             fs << "}";
         }
         // save current stage
-        char buf[10];
+        char buf[17];
         snprintf(buf, sizeof(buf), "%s%d", "stage", i );
         string stageFilename = dirName + buf + ".xml";
         FileStorage fs( stageFilename, FileStorage::WRITE );
@@ -473,7 +473,7 @@ void CvCascadeClassifier::save( const string& filename, bool baseFormat )
             fs << ICV_HAAR_TREES_NAME << "[";
             for( int wi = 0; wi < weak->total; wi++ )
             {
-                int inner_node_idx = -1, total_inner_node_idx = -1;
+                int total_inner_node_idx = -1;
 
                 queue<const CvDTreeNode*> inner_nodes_queue;
                 CvCascadeBoostTree* tree = *((CvCascadeBoostTree**) cvGetSeqElem( weak, wi ));
@@ -490,7 +490,6 @@ void CvCascadeClassifier::save( const string& filename, bool baseFormat )
                 while (!inner_nodes_queue.empty())
                 {
                     tempNode = inner_nodes_queue.front();
-                    inner_node_idx++;
 
                     fs << "{";
                     fs << ICV_HAAR_FEATURE_NAME << "{";
