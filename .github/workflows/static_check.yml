@@ -27,7 +27,7 @@ jobs:
       run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
     - name: Upload Compile Commands
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: compile_commands
         path: ${{github.workspace}}/build/compile_commands.json
@@ -46,7 +46,7 @@ jobs:
                        -export-fixes ${{github.workspace}}/clang-tidy-fixes.yaml
 
     - name: Upload Clang Tidy Result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: clang_tidy_fixes
         path: ${{github.workspace}}/clang-tidy-fixes.yaml
@@ -78,7 +78,7 @@ jobs:
                    --output-file=${{github.workspace}}/cppcheck-report.txt .
 
     - name: Upload CppCheck Result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: cppcheck_report
         path: ${{github.workspace}}/cppcheck-report.txt
