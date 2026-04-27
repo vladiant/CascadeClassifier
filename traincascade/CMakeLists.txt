@@ -100,8 +100,11 @@ target_compile_options(
         #  $<$<CXX_COMPILER_ID:MSVC>:/w14456 /w14457 /w14458 /w14459>
         #  $<$<CXX_COMPILER_ID:MSVC>:/w14700 /w14701 /w14703 /w14774 /w14777>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast -Wcast-qual -Wcast-align=strict>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion -Wsign-conversion -Warith-conversion>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wcast-qual -Wcast-align=strict>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wsign-conversion>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Warith-conversion>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshadow -Wnull-dereference -Wmisleading-indentation>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-branches>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond>
@@ -115,7 +118,7 @@ target_compile_options(
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstack-protector -fstack-protector-strong>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wnon-virtual-dtor -Woverloaded-virtual>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wmaybe-uninitialized>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wmaybe-uninitialized>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Walloca -Wvla>
 )
 
