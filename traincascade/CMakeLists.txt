@@ -93,6 +93,18 @@ target_compile_options(
     PRIVATE
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast -Wcast-qual -Wcast-align=strict>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion -Wsign-conversion -Warith-conversion>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshadow -Wnull-dereference -Wmisleading-indentation>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond -Wduplicated-branches -Wlogical-op>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wimplicit-fallthrough -Wswitch-enum>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-overflow=2 -Wshift-negative-value>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wformat=2 -Wformat-security>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstrict-aliasing=3 -fstrict-aliasing>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstack-protector -fstack-protector-strong>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wnon-virtual-dtor -Woverloaded-virtual>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized -Wmaybe-uninitialized>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Walloca -Wvla>
 )
 
 target_include_directories(
