@@ -100,26 +100,26 @@ target_compile_options(
         #  $<$<CXX_COMPILER_ID:MSVC>:/w14456 /w14457 /w14458 /w14459>
         #  $<$<CXX_COMPILER_ID:MSVC>:/w14700 /w14701 /w14703 /w14774 /w14777>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast> # Fix in code
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wcast-qual>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wcast-align=strict> # Clang
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wsign-conversion>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wsign-conversion> # Fix in code
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion> # Fix in code
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Warith-conversion> # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshadow -Wnull-dereference -Wmisleading-indentation>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-branches>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wlogical-op>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-branches>  # Clang
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond>  # Clang
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wlogical-op>  # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wimplicit-fallthrough -Wswitch-enum>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-overflow=2>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-overflow=2> # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-negative-value>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wformat=2 -Wformat-security>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstrict-aliasing=3>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstrict-aliasing=3> # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fstrict-aliasing>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstack-protector -fstack-protector-strong>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wnon-virtual-dtor -Woverloaded-virtual>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wmaybe-uninitialized>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wmaybe-uninitialized>  # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Walloca -Wvla>
 )
 
