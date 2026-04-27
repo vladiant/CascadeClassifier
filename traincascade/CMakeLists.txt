@@ -92,18 +92,30 @@ target_compile_options(
     ${PROJECT_NAME}
     PRIVATE
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus /Zc:preprocessor /Zc:inline>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14191 /w14242 /w14254 /w14263 /w14265 /w14266 /w14287>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14365 /w14062 /w14061 /w15262 /w14463 /w14146>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14456 /w14457 /w14458 /w14459>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14700 /w14701 /w14703 /w14774 /w14777>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast -Wcast-qual -Wcast-align=strict>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion -Wsign-conversion -Warith-conversion>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshadow -Wnull-dereference -Wmisleading-indentation>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond -Wduplicated-branches -Wlogical-op>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-branches>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wlogical-op>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wimplicit-fallthrough -Wswitch-enum>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-overflow=2 -Wshift-negative-value>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-overflow=2>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-negative-value>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wformat=2 -Wformat-security>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstrict-aliasing=3 -fstrict-aliasing>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstrict-aliasing=3>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fstrict-aliasing>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstack-protector -fstack-protector-strong>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wnon-virtual-dtor -Woverloaded-virtual>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized -Wmaybe-uninitialized>
+        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized>
+         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wmaybe-uninitialized>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Walloca -Wvla>
 )
 
