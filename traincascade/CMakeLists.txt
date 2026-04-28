@@ -103,25 +103,29 @@ target_compile_options(
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast> # Fix in code
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wcast-qual>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wcast-align=strict> # Clang
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wsign-conversion> # Fix in code
         #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion> # Fix in code
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Warith-conversion> # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshadow -Wnull-dereference -Wmisleading-indentation>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-branches>  # Clang
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wduplicated-cond>  # Clang
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wlogical-op>  # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wimplicit-fallthrough -Wswitch-enum>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-overflow=2> # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-negative-value>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wformat=2 -Wformat-security>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstrict-aliasing=3> # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fstrict-aliasing>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wstack-protector -fstack-protector-strong>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wnon-virtual-dtor -Woverloaded-virtual>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wuninitialized>
-        #  $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wmaybe-uninitialized>  # Clang
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Walloca -Wvla>
+         $<$<CXX_COMPILER_ID:GNU>:-Wcast-align=strict>
+         $<$<CXX_COMPILER_ID:GNU>:-Warith-conversion>
+         $<$<CXX_COMPILER_ID:GNU>:-Wduplicated-branches>
+         $<$<CXX_COMPILER_ID:GNU>:-Wduplicated-cond>
+         $<$<CXX_COMPILER_ID:GNU>:-Wlogical-op>
+         $<$<CXX_COMPILER_ID:GNU>:-Wshift-overflow=2>
+         $<$<CXX_COMPILER_ID:GNU>:-Wstrict-aliasing=3>
+         $<$<CXX_COMPILER_ID:GNU>:-Wmaybe-uninitialized>
+         $<$<CXX_COMPILER_ID:Clang>:-Wcast-align>
+         $<$<CXX_COMPILER_ID:Clang>:-Wlogical-op-parentheses>
+         $<$<CXX_COMPILER_ID:Clang>:-Wshift-overflow>
+         $<$<CXX_COMPILER_ID:Clang>:-Wconditional-uninitialized -Wsometimes-uninitialized>
 )
 
 target_include_directories(
