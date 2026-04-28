@@ -24,7 +24,7 @@ jobs:
     - name: Configure CMake    
       shell: bash
       working-directory: ${{github.workspace}}/build      
-      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+      run: cmake .. -DCMAKE_CXX_COMPILER=/usr/bin/clang++ -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
     - name: Upload Compile Commands
       uses: actions/upload-artifact@v7
