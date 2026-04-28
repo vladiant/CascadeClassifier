@@ -22,4 +22,5 @@ ExternalProject_Add(opencv
         -DBUILD_opencv_python3=OFF
         -DBUILD_PROTOBUF=OFF
         -DBUILD_opencv_dnn=OFF
+        -DBUILD_JAVA=OFF
 )
