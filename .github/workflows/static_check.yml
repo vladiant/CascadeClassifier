@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Install OpenCV     
       run: |
@@ -27,7 +27,7 @@ jobs:
       run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
     - name: Upload Compile Commands
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: compile_commands
         path: ${{github.workspace}}/build/compile_commands.json
@@ -46,7 +46,7 @@ jobs:
                        -export-fixes ${{github.workspace}}/clang-tidy-fixes.yaml
 
     - name: Upload Clang Tidy Result
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: clang_tidy_fixes
         path: ${{github.workspace}}/clang-tidy-fixes.yaml
@@ -58,10 +58,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Download Compile Commands
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: compile_commands
 
@@ -78,7 +78,7 @@ jobs:
                    --output-file=${{github.workspace}}/cppcheck-report.txt .
 
     - name: Upload CppCheck Result
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: cppcheck_report
         path: ${{github.workspace}}/cppcheck-report.txt
