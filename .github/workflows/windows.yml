@@ -50,14 +50,13 @@ jobs:
       working-directory: ${{github.workspace}}/build
       shell: bash
       run: |
-        # Locate the OpenCV install dir produced by the External build and add
-        # its DLL bin folder to PATH so ctest can launch the test executable.
-        echo "Listing external install tree to locate OpenCV DLLs:"
-        find "${{github.workspace}}/build/external" -maxdepth 6 -type d -iname bin || true
-        find "${{github.workspace}}/build/external" -maxdepth 8 -iname 'opencv_world*.dll' || true
-        DLL_DIRS=$(find "${{github.workspace}}/build/external" -iname 'opencv_world*.dll' -printf '%h\n' | sort -u)
+        # OpenCV is built with BUILD_LIST (no world module) so DLLs are named
+        # opencv_<module><ver>.dll. Add every directory containing OpenCV DLLs
+        # to PATH so ctest can launch the test executable.
+        DLL_DIRS=$(find "${{github.workspace}}/build/external" -iname 'opencv_*.dll' -printf '%h\n' | sort -u)
+        echo "OpenCV DLL directories:"
+        echo "$DLL_DIRS"
         for d in $DLL_DIRS; do
           export PATH="$(cygpath -u "$d"):$PATH"
         done
-        echo "PATH=$PATH"
         ctest --output-on-failure -C $BUILD_TYPE
