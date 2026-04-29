@@ -146,6 +146,10 @@ include(CTest)
 add_executable(
     test_traincascade
     test/main.cpp
+    test/test_o_utils.cpp
+    test/test_params.cpp
+    test/test_features.cpp
+    test/test_imagestorage.cpp
 )
 
 set_target_properties(
@@ -164,15 +168,12 @@ target_compile_options(
          $<$<CXX_COMPILER_ID:MSVC>:/w14191 /w14242 /w14254 /w14263 /w14265 /w14266 /w14287>
          $<$<CXX_COMPILER_ID:MSVC>:/w14289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549>
          $<$<CXX_COMPILER_ID:MSVC>:/w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928>
-         $<$<CXX_COMPILER_ID:MSVC>:/w14365>
+        #  $<$<CXX_COMPILER_ID:MSVC>:/w14365> # Triggered by inline definitions in library headers
          $<$<CXX_COMPILER_ID:MSVC>:/w14062 /w14061 /w15262 /w14463 /w14146>
          $<$<CXX_COMPILER_ID:MSVC>:/w14456 /w14457 /w14458 /w14459>
          $<$<CXX_COMPILER_ID:MSVC>:/w14700 /w14701 /w14703 /w14774 /w14777>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wold-style-cast>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wcast-qual>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wsign-conversion>
-         $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wconversion>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshadow -Wnull-dereference -Wmisleading-indentation>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wimplicit-fallthrough -Wswitch-enum>
          $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wshift-negative-value>
