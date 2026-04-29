@@ -49,4 +49,7 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}/build
       shell: bash
-      run: ctest --output-on-failure -C $BUILD_TYPE
+      run: |
+        # Add OpenCV runtime DLLs to PATH so ctest can launch the test executable.
+        export PATH="$(cygpath -u "${{github.workspace}}/build/external/external/x64/vc17/bin"):$(cygpath -u "${{github.workspace}}/build/external/external/x64/vc16/bin"):$PATH"
+        ctest --output-on-failure -C $BUILD_TYPE
