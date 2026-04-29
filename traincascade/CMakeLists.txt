@@ -151,6 +151,7 @@ add_executable(
     test/test_features.cpp
     test/test_imagestorage.cpp
     test/test_integration.cpp
+    test/test_serialization.cpp
 )
 
 set_target_properties(
