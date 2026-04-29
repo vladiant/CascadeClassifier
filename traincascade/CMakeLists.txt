@@ -150,6 +150,7 @@ add_executable(
     test/test_params.cpp
     test/test_features.cpp
     test/test_imagestorage.cpp
+    test/test_integration.cpp
 )
 
 set_target_properties(
@@ -208,6 +209,12 @@ target_link_libraries(
     test_traincascade
     PRIVATE
         TrainCascadeLib
+)
+
+target_compile_definitions(
+    test_traincascade
+    PRIVATE
+        TRAINCASCADE_RES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/res"
 )
 
 add_test(NAME test_traincascade COMMAND test_traincascade)
