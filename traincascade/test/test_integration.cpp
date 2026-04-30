@@ -279,3 +279,65 @@ TEST_CASE("CvCascadeClassifier::train: throws when cascade dir name is empty") {
   std::error_code ec;
   fs::remove_all(workDir, ec);
 }
+
+// ---------------------------------------------------------------------------
+// Multi-stage boost loop
+// ---------------------------------------------------------------------------
+
+TEST_CASE(
+    "CvCascadeClassifier::train: completes multi-stage training "
+    "(numStages=2, maxWeakCount=3, maxDepth=2)") {
+  // Arrange: a 2-stage LBP cascade with depth-2 trees and up to 3 weak
+  // learners per stage. This exercises the boost outer loop for more than one
+  // stage as well as the recursive split path in o_cvboostree.cpp (depth>1)
+  // and the sample-weight update path in boost.cpp that runs between stages.
+  const auto workDir = makeUniqueOutputDir("multistage");
+  const auto res = stageResources(workDir);
+  const auto dataDir = workDir / "data";
+  fs::create_directories(dataDir);
+
+  CvCascadeParams cascadeParams(CvCascadeParams::BOOST,
+                                CvFeatureParams::LBP);
+  cascadeParams.winSize = cv::Size(75, 32);
+  CvLBPFeatureParams featureParams;
+  CvCascadeBoostParams stageParams(cv::ml::Boost::GENTLE,
+                                   /*minHitRate=*/0.995F,
+                                   /*maxFalseAlarm=*/0.5F,
+                                   /*weightTrimRate=*/0.95,
+                                   /*maxDepth=*/2,
+                                   /*maxWeakCount=*/3);
+
+  CvCascadeClassifier classifier;
+
+  // Act
+  const bool ok = classifier.train(dataDir.string(),
+                                   res.vec.string(),
+                                   res.bg.string(),
+                                   /*numPos=*/20,
+                                   /*numNeg=*/1,
+                                   /*precalcValBufSize=*/64,
+                                   /*precalcIdxBufSize=*/64,
+                                   /*numStages=*/2,
+                                   cascadeParams,
+                                   featureParams,
+                                   stageParams,
+                                   /*baseFormatSave=*/false,
+                                   /*acceptanceRatioBreakValue=*/-1.0);
+
+  // Assert: train() returns true when at least one stage trains successfully.
+  // The second stage may early-exit if the negative reservoir is exhausted,
+  // but stage 0 must always be produced. We accept either a single-stage or a
+  // full two-stage cascade and verify the artefacts that are guaranteed.
+  CHECK(ok);
+  CHECK(fs::exists(dataDir / "cascade.xml"));
+  CHECK(fs::exists(dataDir / "params.xml"));
+  REQUIRE(fs::exists(dataDir / "stage0.xml"));
+
+  // The produced cascade.xml must remain loadable by the public detector.
+  cv::CascadeClassifier loaded((dataDir / "cascade.xml").string());
+  CHECK_FALSE(loaded.empty());
+
+  // Cleanup
+  std::error_code ec;
+  fs::remove_all(workDir, ec);
+}

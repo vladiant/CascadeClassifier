@@ -1,4 +1,4 @@
-# Unit tests for the color2gray algorithm
+# Unit tests for the TrainCascadeLib
 
 ## Test framework: doctest
 * https://github.com/onqtam/doctest
