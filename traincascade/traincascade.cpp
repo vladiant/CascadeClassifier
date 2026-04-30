@@ -1,3 +1,23 @@
+/**
+ * @file traincascade.cpp
+ * @brief Command-line entry point for the cascade classifier trainer.
+ *
+ * This is the @c traincascade executable. It instantiates a
+ * @ref CvCascadeClassifier, parses command-line attributes into the
+ * three nested parameter structs (@ref CvCascadeParams,
+ * @ref CvCascadeBoostParams, @ref CvFeatureParams) and dispatches to
+ * @ref CvCascadeClassifier::train. Unknown attributes are forwarded to
+ * each parameter struct in turn via @c scanAttr; the first one that
+ * recognizes the flag consumes the value.
+ *
+ * Required arguments:
+ *  - @c -data <dir>: output directory for stage XMLs and @c cascade.xml.
+ *  - @c -vec  <file>: positives, produced by @c opencv_createsamples.
+ *  - @c -bg   <file>: text file listing background images for negatives.
+ *
+ * Run the binary without arguments for the full list of optional flags
+ * and their default values.
+ */
 #include <iostream>
 
 #include <opencv2/core.hpp>
@@ -7,24 +27,33 @@
 using namespace std;
 using namespace cv;
 
-/*
-traincascade.cpp is the source file of the program used for cascade training.
-User has to provide training input in form of positive and negative training images,
-and other data related to training in form of command line argument.
-*/
+/**
+ * @brief Program entry point: parse CLI flags and run cascade training.
+ *
+ * The argument-parsing loop tries known top-level flags first, then
+ * delegates unknown @c -name value pairs to the parameter structs
+ * (@c cascadeParams, @c stageParams, then each entry of @c featureParams)
+ * so feature-family-specific flags such as @c -mode (Haar) or @c -mode
+ * (LBP) are picked up by the matching evaluator's parameters.
+ */
 int main( int argc, char* argv[] )
 {
+    /// Cascade trainer; populates output directory with stage XMLs.
     CvCascadeClassifier classifier;
     string cascadeDirName, vecName, bgName;
-    int numPos    = 2000;
-    int numNeg    = 1000;
-    int numStages = 20;
+    int numPos    = 2000;     ///< Default positives consumed per stage.
+    int numNeg    = 1000;     ///< Default negatives mined per stage.
+    int numStages = 20;       ///< Maximum number of cascade stages.
     int numThreads = getNumThreads();
-    int precalcValBufSize = 1024,
-        precalcIdxBufSize = 1024;
-    bool baseFormatSave = false;
-    double acceptanceRatioBreakValue = -1.0;
+    int precalcValBufSize = 1024,  ///< Feature-value cache size in MB.
+        precalcIdxBufSize = 1024;  ///< Sorted-index cache size in MB.
+    bool baseFormatSave = false;   ///< When true also write the legacy XML layout.
+    double acceptanceRatioBreakValue = -1.0; ///< -1 disables early stopping.
 
+    // The three parameter structs collectively configure every aspect of
+    // the cascade: window size & feature type (cascadeParams), boosting
+    // and stage rate targets (stageParams), and feature-specific knobs
+    // (featureParams[HAAR / LBP / HOG]).
     CvCascadeParams cascadeParams;
     CvCascadeBoostParams stageParams;
     Ptr<CvFeatureParams> featureParams[] = { makePtr<CvHaarFeatureParams>(),
@@ -55,6 +84,9 @@ int main( int argc, char* argv[] )
 
     for( int i = 1; i < argc; i++ )
     {
+        // Try every known top-level flag in order; if none match, fall
+        // through to the parameter structs which expose their own
+        // attributes via scanAttr().
         bool set = false;
         if( !strcmp( argv[i], "-data" ) )
         {
@@ -117,6 +149,8 @@ int main( int argc, char* argv[] )
     }
 
     setNumThreads( numThreads );
+    // Hand control over to the cascade trainer; it owns the multi-stage
+    // training loop, sample mining, and persistence of intermediate state.
     classifier.train( cascadeDirName,
                       vecName,
                       bgName,

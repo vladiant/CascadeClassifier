@@ -1,3 +1,14 @@
+/**
+ * @file HOGfeatures.h
+ * @brief Block-cell Histogram-of-Oriented-Gradients features.
+ *
+ * Each HOG feature here is a 2x2 block of cells; per cell the evaluator
+ * accumulates @c N_BINS oriented-gradient histograms, then L1-normalizes
+ * the four per-cell histograms by the block sum. The descriptor length
+ * therefore is @c N_BINS*N_CELLS = 36 floats, exposed by mapping the
+ * boosting variable index back to (featureIdx, componentIdx).
+ */
+
 #ifndef _OPENCV_HOGFEATURES_H_
 #define _OPENCV_HOGFEATURES_H_
 
@@ -6,15 +17,29 @@
 //#define TEST_INTHIST_BUILD
 //#define TEST_FEAT_CALC
 
+/// Number of orientation bins per cell histogram.
 #define N_BINS 9
+/// Number of cells per block (2x2 grid).
 #define N_CELLS 4
 
 #define HOGF_NAME "HOGFeatureParams"
+
+/// HOG-specific parameter struct; mostly delegates to @ref CvFeatureParams
+/// after setting @c featSize = N_BINS*N_CELLS = 36.
 struct CvHOGFeatureParams : public CvFeatureParams
 {
     CvHOGFeatureParams();
 };
 
+/**
+ * @brief HOG feature evaluator for cascade training.
+ *
+ * Stores @c N_BINS integral-histogram channels (@c hist) and an integral
+ * image of cell magnitudes (@c normSum) per sample. Each abstract
+ * "variable" the boosting trainer asks for is decoded as
+ * @c (varIdx / 36, varIdx % 36) into (feature, component) so a single
+ * feature contributes 36 boosting variables.
+ */
 class CvHOGEvaluator : public CvFeatureEvaluator
 {
 public:
@@ -25,25 +50,32 @@ public:
     float operator()(int varIdx, int sampleIdx) const override;
     void writeFeatures( cv::FileStorage &fs, const cv::Mat& featureMap ) const override;
 protected:
+    /// Enumerate every valid 2x2-block HOG feature for the current window.
     void generateFeatures() override;
+    /// Build the @p nbins integral histograms plus the L1-normalization
+    /// integral image @p norm from the input gray image @p img.
     virtual void integralHistogram(const cv::Mat &img, std::vector<cv::Mat> &histogram, cv::Mat &norm, int nbins) const;
+
+    /// Geometry of a single HOG feature: a 2x2 grid of cell rectangles.
     class Feature
     {
     public:
         Feature();
         Feature( int offset, int x, int y, int cellW, int cellH );
+        /// Read one descriptor component (@p featComponent in [0, N_BINS*N_CELLS)).
         float calc( const std::vector<cv::Mat> &_hists, const cv::Mat &_normSum, size_t y, int featComponent ) const;
         void write( cv::FileStorage &fs ) const;
         void write( cv::FileStorage &fs, int varIdx ) const;
 
         cv::Rect rect[N_CELLS]; //cells
 
+        /// Precomputed corner offsets per cell into the integral histograms.
         struct
         {
             int p0, p1, p2, p3;
         } fastRect[N_CELLS]{};
     };
-    std::vector<Feature> features;
+    std::vector<Feature> features; ///< Generated HOG-feature catalog.
 
     cv::Mat normSum; //for normalization calculation (L1 or L2)
     std::vector<cv::Mat> hist;
