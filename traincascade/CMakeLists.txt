@@ -152,6 +152,7 @@ add_executable(
     test/test_imagestorage.cpp
     test/test_integration.cpp
     test/test_serialization.cpp
+    test/test_dtree.cpp
 )
 
 set_target_properties(
