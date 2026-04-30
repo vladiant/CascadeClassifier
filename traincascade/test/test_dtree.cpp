@@ -247,3 +247,157 @@ TEST_CASE("CvDTreeTrainData::clear: is safe to call on a default-constructed ins
   CHECK(data.sample_count == 0);
   CHECK(data.var_count == 0);
 }
+
+// ---------------------------------------------------------------------------
+// Branch-coverage extension: regression mode, 2-D classification, pruning.
+// These tests drive code paths in o_cvdtree.cpp / o_cvdtreetraindata.cpp that
+// the cascade trainer never touches (it always runs depth-1 classification
+// without surrogates or CV folds).
+// ---------------------------------------------------------------------------
+
+TEST_CASE("CvDTree::train: regression mode learns a step-function on a 1-D dataset") {
+  // Arrange: y = 0 for x <= 0.4, y = 10 for x >= 0.6. Both feature and
+  // response are ORDERED, which selects find_split_ord_reg / regression
+  // value computation in calc_node_value.
+  cv::Mat data = (cv::Mat_<float>(10, 1)
+                  << 0.0f, 0.1f, 0.2f, 0.3f, 0.4f,
+                     0.6f, 0.7f, 0.8f, 0.9f, 1.0f);
+  cv::Mat resp = (cv::Mat_<float>(10, 1)
+                  << 0, 0, 0, 0, 0,
+                     10, 10, 10, 10, 10);
+  cv::Mat varType = (cv::Mat_<uchar>(2, 1) << cv::ml::VAR_ORDERED,
+                                              cv::ml::VAR_ORDERED);
+  CvDTreeParams params;
+  params.max_depth = 3;
+  params.min_sample_count = 1;
+  params.cv_folds = 0;
+  params.regression_accuracy = 0.01f;
+  params.use_surrogates = false;
+  CvDTree tree;
+
+  // Act
+  const bool trained = tree.train(data, cv::ml::ROW_SAMPLE, resp, cv::Mat(),
+                                  cv::Mat(), varType, cv::Mat(), params);
+
+  // Assert: regression tree must reproduce both plateau values.
+  CHECK(trained);
+  REQUIRE(tree.get_root() != nullptr);
+  CHECK_FALSE(tree.get_data()->is_classifier);
+  cv::Mat low = (cv::Mat_<float>(1, 1) << 0.05f);
+  cv::Mat high = (cv::Mat_<float>(1, 1) << 0.95f);
+  CHECK(tree.predict(low)->value == doctest::Approx(0.0).epsilon(0.5));
+  CHECK(tree.predict(high)->value == doctest::Approx(10.0).epsilon(0.5));
+}
+
+TEST_CASE("CvDTree::train: 2-D classification picks an axis-aligned split") {
+  // Arrange: two clusters separated along feature 0.
+  //   class 0: (x=0.0..0.4, y arbitrary)
+  //   class 1: (x=0.6..1.0, y arbitrary)
+  // Two ordered features + one categorical response forces the trainer to
+  // evaluate both candidate split variables in find_best_split.
+  cv::Mat data = (cv::Mat_<float>(8, 2)
+                  << 0.0f, 0.0f,
+                     0.1f, 0.9f,
+                     0.2f, 0.4f,
+                     0.4f, 0.6f,
+                     0.6f, 0.1f,
+                     0.7f, 0.5f,
+                     0.9f, 0.3f,
+                     1.0f, 0.8f);
+  cv::Mat resp = (cv::Mat_<float>(8, 1) << 0, 0, 0, 0, 1, 1, 1, 1);
+  cv::Mat varType = (cv::Mat_<uchar>(3, 1) << cv::ml::VAR_ORDERED,
+                                              cv::ml::VAR_ORDERED,
+                                              cv::ml::VAR_CATEGORICAL);
+  CvDTreeParams params;
+  params.max_depth = 4;
+  params.min_sample_count = 1;
+  params.cv_folds = 0;
+  params.use_surrogates = false;
+  CvDTree tree;
+
+  // Act
+  const bool trained = tree.train(data, cv::ml::ROW_SAMPLE, resp, cv::Mat(),
+                                  cv::Mat(), varType, cv::Mat(), params);
+
+  // Assert
+  REQUIRE(trained);
+  cv::Mat lowSample = (cv::Mat_<float>(1, 2) << 0.05f, 0.5f);
+  cv::Mat highSample = (cv::Mat_<float>(1, 2) << 0.95f, 0.5f);
+  CHECK(cvRound(tree.predict(lowSample)->value) == 0);
+  CHECK(cvRound(tree.predict(highSample)->value) == 1);
+}
+
+TEST_CASE("CvDTree::train: cv_folds pruning produces a usable tree on a noisy dataset") {
+  // Arrange: 60 samples, clean separable (x<=0.45 -> 0, x>=0.55 -> 1) with a
+  // few label flips near the boundary so the unpruned tree wants to overfit.
+  // Setting cv_folds > 0 exercises prune_cv / free_prune_data in
+  // o_cvdtree.cpp. CvDTreeTrainData rejects cv_folds when the per-fold
+  // sample count drops too low, so we use 60 samples / 3 folds.
+  const int N = 60;
+  cv::Mat data(N, 1, CV_32F);
+  cv::Mat resp(N, 1, CV_32F);
+  for (int i = 0; i < N; ++i) {
+    const float x = i / static_cast<float>(N - 1);
+    data.at<float>(i, 0) = x;
+    resp.at<float>(i, 0) = x < 0.5f ? 0.0f : 1.0f;
+  }
+  // Inject a handful of label flips near the boundary.
+  resp.at<float>(28, 0) = 1.0f;
+  resp.at<float>(31, 0) = 0.0f;
+  cv::Mat varType = (cv::Mat_<uchar>(2, 1) << cv::ml::VAR_ORDERED,
+                                              cv::ml::VAR_CATEGORICAL);
+  CvDTreeParams params;
+  params.max_depth = 6;
+  params.min_sample_count = 1;
+  params.cv_folds = 3;
+  params.use_1se_rule = true;
+  params.truncate_pruned_tree = true;
+  params.use_surrogates = false;
+  CvDTree tree;
+
+  // Act
+  const bool trained = tree.train(data, cv::ml::ROW_SAMPLE, resp, cv::Mat(),
+                                  cv::Mat(), varType, cv::Mat(), params);
+
+  // Assert: pruned tree must remain non-trivial and classify the bulk of the
+  // dataset correctly (the two injected flips are tolerated).
+  REQUIRE(trained);
+  REQUIRE(tree.get_root() != nullptr);
+  cv::Mat lowSample = (cv::Mat_<float>(1, 1) << 0.05f);
+  cv::Mat highSample = (cv::Mat_<float>(1, 1) << 0.95f);
+  CHECK(cvRound(tree.predict(lowSample)->value) == 0);
+  CHECK(cvRound(tree.predict(highSample)->value) == 1);
+}
+
+TEST_CASE("CvDTree::train: sampleIdx mask trains on the selected subset only") {
+  // Arrange: 10-row 1-D dataset; the 8U mask selects rows 0..2 (class 0)
+  // plus rows 7..9 (class 1) and skips the four rows nearest the boundary.
+  // This drives the sample-mask preprocessing path in CvDTreeTrainData.
+  cv::Mat data = (cv::Mat_<float>(10, 1)
+                  << 0.0f, 0.1f, 0.2f, 0.3f, 0.4f,
+                     0.6f, 0.7f, 0.8f, 0.9f, 1.0f);
+  cv::Mat resp = (cv::Mat_<float>(10, 1)
+                  << 0, 0, 0, 0, 0,
+                     1, 1, 1, 1, 1);
+  cv::Mat varType = (cv::Mat_<uchar>(2, 1) << cv::ml::VAR_ORDERED,
+                                              cv::ml::VAR_CATEGORICAL);
+  cv::Mat sampleMask = (cv::Mat_<uchar>(10, 1) << 1, 1, 1, 0, 0,
+                                                  0, 0, 1, 1, 1);
+  CvDTreeParams params;
+  params.max_depth = 3;
+  params.min_sample_count = 1;
+  params.cv_folds = 0;
+  CvDTree tree;
+
+  // Act
+  const bool trained = tree.train(data, cv::ml::ROW_SAMPLE, resp, cv::Mat(),
+                                  sampleMask, varType, cv::Mat(), params);
+
+  // Assert: tree must classify both endpoints correctly using the masked
+  // training subset.
+  REQUIRE(trained);
+  cv::Mat lowSample = (cv::Mat_<float>(1, 1) << 0.05f);
+  cv::Mat highSample = (cv::Mat_<float>(1, 1) << 0.95f);
+  CHECK(cvRound(tree.predict(lowSample)->value) == 0);
+  CHECK(cvRound(tree.predict(highSample)->value) == 1);
+}
