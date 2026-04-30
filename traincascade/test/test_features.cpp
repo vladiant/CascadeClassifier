@@ -1,6 +1,7 @@
 #include <doctest/doctest.h>
 
 #include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "traincascade_features.h"
 #include "haarfeatures.h"
@@ -438,3 +439,122 @@ TEST_CASE("CvHOGEvaluator::operator(): produces at least one non-zero on a textu
   CHECK(foundNonZero);
 }
 
+
+// ---------------------------------------------------------------------------
+// Direct CvHaarEvaluator::Feature::calc tests against known integral images
+//
+// Feature is a protected nested type, so we expose it via a thin probe
+// subclass and construct/evaluate features by hand. The integral image is
+// passed as a single flattened row (row-major) because calc() expects all
+// fast-rect offsets to index into one cv::Mat row.
+// ---------------------------------------------------------------------------
+
+namespace {
+
+class HaarFeatureProbe : public CvHaarEvaluator {
+ public:
+  using CvHaarEvaluator::Feature;
+};
+using HaarFeature = HaarFeatureProbe::Feature;
+
+}  // namespace
+
+TEST_CASE("CvHaarEvaluator::Feature::calc: upright two-rect feature on a vertical-step image") {
+  // Arrange: 8x8 image, left half = 0, right half = 100. Feature: +1 over the
+  // left half rectangle, -1 over the right half. Expected response =
+  // (left sum) - (right sum) = 0 - (100 * 4 * 8) = -3200.
+  cv::Mat img(8, 8, CV_8UC1, cv::Scalar(0));
+  img.colRange(4, 8).setTo(100);
+  cv::Mat sum;
+  cv::integral(img, sum, CV_32S);                    // 9x9 CV_32S
+  const cv::Mat sumRow = sum.reshape(0, 1);          // flatten to one row
+  cv::Mat unusedTilted;                              // not read for upright
+  const int offset = sum.cols;                       // = 9
+
+  HaarFeature feature(offset, /*tilted=*/false,
+                      /*x0,y0,w0,h0,wt0=*/0, 0, 4, 8, +1.0F,
+                      /*x1,y1,w1,h1,wt1=*/4, 0, 4, 8, -1.0F);
+
+  // Act
+  const float response = feature.calc(sumRow, unusedTilted, 0);
+
+  // Assert
+  CHECK(response == doctest::Approx(-3200.0F));
+}
+
+TEST_CASE("CvHaarEvaluator::Feature::calc: upright feature returns zero on a uniform image") {
+  // Arrange: uniform 8x8 image, balanced two-rect feature → response = 0.
+  cv::Mat img(8, 8, CV_8UC1, cv::Scalar(42));
+  cv::Mat sum;
+  cv::integral(img, sum, CV_32S);
+  const cv::Mat sumRow = sum.reshape(0, 1);
+  cv::Mat unusedTilted;
+
+  HaarFeature feature(sum.cols, /*tilted=*/false,
+                      0, 0, 4, 8, +1.0F,
+                      4, 0, 4, 8, -1.0F);
+
+  // Act
+  const float response = feature.calc(sumRow, unusedTilted, 0);
+
+  // Assert: any balanced two-rect filter is zero on a constant image.
+  CHECK(response == doctest::Approx(0.0F));
+}
+
+TEST_CASE("CvHaarEvaluator::Feature::calc: upright three-rect feature uses rect[2] when its weight is non-zero") {
+  // Arrange: 9x3 image with the centre column = 200, others = 0. Build a
+  // horizontal three-rect feature
+  //   rect[0] = full 9x3   weight = +1
+  //   rect[1] = centre 3x3 weight = -3
+  // (centred-band Haar feature). On this 3x9 image:
+  //   rect[0] sum = 200 * 3 (cols) * 3 (rows) = 1800
+  //   rect[1] sum = 200 * 3 (cols) * 3 (rows) = 1800
+  //   response   = 1800*1 + 1800*(-3) = -3600.
+  cv::Mat img(3, 9, CV_8UC1, cv::Scalar(0));
+  img.colRange(3, 6).setTo(200);
+  cv::Mat sum;
+  cv::integral(img, sum, CV_32S);                    // 4x10 CV_32S
+  const cv::Mat sumRow = sum.reshape(0, 1);
+  cv::Mat unusedTilted;
+
+  HaarFeature feature(sum.cols, /*tilted=*/false,
+                      /*rect0=*/0, 0, 9, 3, +1.0F,
+                      /*rect1=*/3, 0, 3, 3, -3.0F);
+
+  // Act
+  const float response = feature.calc(sumRow, unusedTilted, 0);
+
+  // Assert
+  CHECK(response == doctest::Approx(-3600.0F));
+}
+
+TEST_CASE("CvHaarEvaluator::Feature::calc: tilted-feature branch reads the tilted integral image") {
+  // Arrange: 16x16 uniform image of ones. The tilted integral image computed
+  // by cv::integral lets us evaluate a 45-degree rotated rectangle's area as
+  //     tilted[p0] + tilted[p3] - tilted[p1] - tilted[p2]
+  // which on a unit-valued image equals w * h. We pick a rectangle that fits
+  // entirely inside the image and use a single weighted rect (rect[1] has
+  // zero weight, so its contribution drops out).
+  cv::Mat img(16, 16, CV_8UC1, cv::Scalar(1));
+  cv::Mat sum;
+  cv::Mat sqsum;
+  cv::Mat tilted;
+  cv::integral(img, sum, sqsum, tilted, CV_32S);     // tilted: 17x17 CV_32S
+  const cv::Mat tiltedRow = tilted.reshape(0, 1);
+  cv::Mat unusedSum;                                 // not read for tilted
+
+  // Tilted rectangle anchored so that all four corner offsets fall within the
+  // 17x17 tilted integral. With x=8,y=2,w=4,h=4 the corners land at
+  //   (8,2)  (12,6)  (4,6)  (8,10)  — all inside.
+  HaarFeature feature(tilted.cols, /*tilted=*/true,
+                      /*rect0=*/8, 2, 4, 4, +1.0F,
+                      /*rect1 weight = 0 → ignored*/0, 0, 0, 0, 0.0F);
+
+  // Act
+  const float response = feature.calc(unusedSum, tiltedRow, 0);
+
+  // Assert: the cascade-trainer tilted-rect convention has sides of length
+  // w*sqrt(2) and h*sqrt(2) (w runs along (+1,+1), h along (-1,+1)), so the
+  // rotated rectangle's area on an all-ones image is 2 * w * h = 32.
+  CHECK(response == doctest::Approx(32.0F));
+}
