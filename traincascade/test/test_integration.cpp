@@ -341,3 +341,93 @@ TEST_CASE(
   std::error_code ec;
   fs::remove_all(workDir, ec);
 }
+
+// ---------------------------------------------------------------------------
+// HAAR feature-set variants
+// ---------------------------------------------------------------------------
+
+TEST_CASE("CvCascadeClassifier::train: HAAR CORE mode produces a usable cascade") {
+  // Arrange: CORE adds the diagonal/centred Haar features on top of BASIC,
+  // exercising additional code paths in haarfeatures.cpp (generateFeatures).
+  const auto workDir = makeUniqueOutputDir("haar_core");
+  const auto res = stageResources(workDir);
+  const auto dataDir = workDir / "data";
+  fs::create_directories(dataDir);
+
+  CvCascadeParams cascadeParams(CvCascadeParams::BOOST,
+                                CvFeatureParams::HAAR);
+  cascadeParams.winSize = cv::Size(75, 32);
+  CvHaarFeatureParams featureParams(CvHaarFeatureParams::CORE);
+  CvCascadeBoostParams stageParams(cv::ml::Boost::GENTLE,
+                                   0.995F, 0.5F, 0.95, 1, 10);
+
+  CvCascadeClassifier classifier;
+
+  // Act
+  const bool ok = classifier.train(dataDir.string(),
+                                   res.vec.string(),
+                                   res.bg.string(),
+                                   /*numPos=*/20,
+                                   /*numNeg=*/1,
+                                   /*precalcValBufSize=*/64,
+                                   /*precalcIdxBufSize=*/64,
+                                   /*numStages=*/1,
+                                   cascadeParams,
+                                   featureParams,
+                                   stageParams,
+                                   /*baseFormatSave=*/false,
+                                   /*acceptanceRatioBreakValue=*/-1.0);
+
+  // Assert
+  CHECK(ok);
+  CHECK(fs::exists(dataDir / "cascade.xml"));
+  cv::CascadeClassifier loaded((dataDir / "cascade.xml").string());
+  CHECK_FALSE(loaded.empty());
+
+  // Cleanup
+  std::error_code ec;
+  fs::remove_all(workDir, ec);
+}
+
+TEST_CASE("CvCascadeClassifier::train: HAAR ALL mode produces a usable cascade") {
+  // Arrange: ALL adds the 45-degree rotated Haar features, covering the
+  // remaining branch in CvHaarEvaluator::generateFeatures.
+  const auto workDir = makeUniqueOutputDir("haar_all");
+  const auto res = stageResources(workDir);
+  const auto dataDir = workDir / "data";
+  fs::create_directories(dataDir);
+
+  CvCascadeParams cascadeParams(CvCascadeParams::BOOST,
+                                CvFeatureParams::HAAR);
+  cascadeParams.winSize = cv::Size(75, 32);
+  CvHaarFeatureParams featureParams(CvHaarFeatureParams::ALL);
+  CvCascadeBoostParams stageParams(cv::ml::Boost::GENTLE,
+                                   0.995F, 0.5F, 0.95, 1, 10);
+
+  CvCascadeClassifier classifier;
+
+  // Act
+  const bool ok = classifier.train(dataDir.string(),
+                                   res.vec.string(),
+                                   res.bg.string(),
+                                   /*numPos=*/20,
+                                   /*numNeg=*/1,
+                                   /*precalcValBufSize=*/64,
+                                   /*precalcIdxBufSize=*/64,
+                                   /*numStages=*/1,
+                                   cascadeParams,
+                                   featureParams,
+                                   stageParams,
+                                   /*baseFormatSave=*/false,
+                                   /*acceptanceRatioBreakValue=*/-1.0);
+
+  // Assert
+  CHECK(ok);
+  CHECK(fs::exists(dataDir / "cascade.xml"));
+  cv::CascadeClassifier loaded((dataDir / "cascade.xml").string());
+  CHECK_FALSE(loaded.empty());
+
+  // Cleanup
+  std::error_code ec;
+  fs::remove_all(workDir, ec);
+}
