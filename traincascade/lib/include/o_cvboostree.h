@@ -1,19 +1,36 @@
+/**
+ * @file o_cvboostree.h
+ * @brief Decision-tree weak learner used by @ref CvBoost / @ref CvCascadeBoost.
+ */
 #pragma once
 
 #include "o_cvdtree.h"
 
 class CvBoost;
 
-// CvBoost, CvCascadeBoostTree
+/**
+ * @brief Single decision tree trained as a weak learner inside a boosted
+ *        ensemble.
+ *
+ * Inherits @ref CvDTree's split-finding machinery and overrides the
+ * value-computation hooks (@c calc_node_value, @c calc_node_dir,
+ * @c find_split_*) so the tree minimizes the weighted objective
+ * implied by the parent ensemble's boosting variant. The standalone
+ * @ref CvDTree::train overloads are kept around as no-ops to avoid
+ * compiler warnings; only the @c train(trainData, idx, ensemble)
+ * overload should be called from outside.
+ */
 class CvBoostTree : public CvDTree {
  public:
   CvBoostTree();
   virtual ~CvBoostTree();
 
   using CvDTree::train;
+  /// Train this weak learner against the boosting state held by @p ensemble.
   bool train(CvDTreeTrainData* trainData, const CvMat* subsample_idx,
              CvBoost* ensemble);
 
+  /// Multiply every leaf value by @p s (used by REAL/LOGIT AdaBoost).
   virtual void scale(double s);
   void clear() override;
 
@@ -47,8 +64,10 @@ class CvBoostTree : public CvDTree {
                                    float init_quality = 0,
                                    CvDTreeSplit* _split = 0,
                                    uchar* ext_buf = 0) override;
+  /// Compute the leaf prediction using the boosting weights.
   void calc_node_value(CvDTreeNode* n) override;
+  /// Compute the routing direction (left/right majority) for node @p n.
   double calc_node_dir(CvDTreeNode* n) override;
 
-  CvBoost* ensemble;
+  CvBoost* ensemble; ///< Non-owning back-pointer to the parent ensemble.
 };
