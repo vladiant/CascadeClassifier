@@ -516,7 +516,7 @@ CvBackgroundData* cvbgdata = nullptr;
 static int icvStartSampleDistortion(const char* imgfilename, int bgcolor,
                                     int bgthreshold,
                                     CvSampleDistortionData* data) {
-  memset(data, 0, sizeof(*data));
+  *data = CvSampleDistortionData{};
   data->src = imread(imgfilename, IMREAD_GRAYSCALE);
   if (!(data->src.empty()) && data->src.type() == CV_8UC1) {
     int r = 0, c = 0;

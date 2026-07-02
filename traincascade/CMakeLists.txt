@@ -167,6 +167,7 @@ target_compile_options(
     test_traincascade
     PRIVATE
          $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+         $<$<CXX_COMPILER_ID:MSVC>:/wd5285>
          $<$<CXX_COMPILER_ID:MSVC>:/Zc:__cplusplus /Zc:preprocessor /Zc:inline>
          $<$<CXX_COMPILER_ID:MSVC>:/w14191 /w14242 /w14254 /w14263 /w14265 /w14266 /w14287>
          $<$<CXX_COMPILER_ID:MSVC>:/w14289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549>
