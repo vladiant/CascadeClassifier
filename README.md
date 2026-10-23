@@ -47,6 +47,97 @@ cmake --build build
 
 A coverage-enabled build is also available under `build-coverage/`.
 
+## 10-minute end-to-end tutorial (real public dataset)
+
+This walkthrough trains a small **face** cascade in a few minutes using
+the public **Caltech-101** dataset:
+
+- positives from `Faces_easy`
+- negatives from `BACKGROUND_Google`
+- dataset source: https://data.caltech.edu/records/mzrjq-6wc02
+
+The model is intentionally tiny (for speed), but the pipeline is the same
+one used for larger production-quality runs.
+
+> On a modern laptop CPU, the commands below typically finish in about
+> 5-10 minutes.
+
+```sh
+# 1) Build the trainer + createsamples
+cmake -S . -B build -G Ninja
+cmake --build build --target traincascade createsamples
+
+# 2) Prepare a quick workspace
+mkdir -p quickstart/{downloads,data,positives,negatives,classifier}
+
+# 3) Download and unpack Caltech-101
+curl -L "https://data.caltech.edu/records/mzrjq-6wc02/files/caltech-101.zip?download=1" \
+  -o quickstart/downloads/caltech-101.zip
+unzip -q quickstart/downloads/caltech-101.zip -d quickstart/data
+tar -xzf quickstart/data/caltech-101/101_ObjectCategories.tar.gz \
+  -C quickstart/data/caltech-101
+
+# 4) Build positive/negative lists
+# NOTE: createsamples resolves image paths relative to info.dat location,
+# so positives are written as ../data/... relative paths.
+find quickstart/data/caltech-101/101_ObjectCategories/Faces_easy -name "*.jpg" | sort | head -n 400 \
+  | sed 's#^quickstart/#../#' > quickstart/positives/images_rel.txt
+
+# NOTE: traincascade resolves bg entries as regular paths, so we store
+# absolute paths for negatives.
+find "$(pwd)/quickstart/data/caltech-101/101_ObjectCategories/BACKGROUND_Google" -name "*.jpg" | sort \
+  > quickstart/negatives/bg_abs.txt
+
+# 5) Create info.dat (one object covering full image dimensions)
+python3 - <<'PY'
+from pathlib import Path
+from PIL import Image
+
+images = [line.strip() for line in Path("quickstart/positives/images_rel.txt").read_text().splitlines() if line.strip()]
+with Path("quickstart/positives/info.dat").open("w") as out:
+    for rel_path in images:
+        full_path = (Path("quickstart/positives") / rel_path).resolve()
+        with Image.open(full_path) as im:
+            w, h = im.size
+        out.write(f"{rel_path} 1 0 0 {w} {h}\n")
+PY
+
+# 6) Convert positives to .vec
+./build/tools/createsamples/createsamples \
+  -info quickstart/positives/info.dat \
+  -vec quickstart/positives/faces_easy_24x24.vec \
+  -num 380 \
+  -w 24 -h 24
+
+# 7) Train a compact cascade (LBP is much faster than HAAR)
+./build/traincascade/traincascade \
+  -data quickstart/classifier \
+  -vec quickstart/positives/faces_easy_24x24.vec \
+  -bg quickstart/negatives/bg_abs.txt \
+  -numPos 350 \
+  -numNeg 400 \
+  -numStages 4 \
+  -featureType LBP \
+  -w 24 -h 24 \
+  -minHitRate 0.995 \
+  -maxFalseAlarmRate 0.5 \
+  -precalcValBufSize 256 \
+  -precalcIdxBufSize 256
+
+# 8) Result
+ls -lh quickstart/classifier/cascade.xml
+```
+
+Notes:
+
+- If training aborts with "insufficient samples", reduce `-numPos` and
+  `-numNeg` slightly.
+- For higher accuracy, scale up: more positives/negatives, more stages,
+  and optionally HAAR features.
+- To test interactively, use `tools/detection/Cpp` or
+  `tools/detection/Python/detect.py` with
+  `quickstart/classifier/cascade.xml`.
+
 ## Architecture overview
 
 The trainer is structured as a small hierarchy of legacy OpenCV ML
