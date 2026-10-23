@@ -49,12 +49,12 @@ A coverage-enabled build is also available under `build-coverage/`.
 
 ## 10-minute end-to-end tutorial (real public dataset)
 
-This walkthrough trains a small **face** cascade in a few minutes using:
+This walkthrough trains a small **face** cascade in a few minutes using
+the public **Caltech-101** dataset:
 
-- **LFW (Labeled Faces in the Wild)** for positives  
-  http://vis-www.cs.umass.edu/lfw/
-- **Caltech-101 `BACKGROUND_Google`** for negatives  
-  https://data.caltech.edu/records/mzrjq-6wc02
+- positives from `Faces_easy`
+- negatives from `BACKGROUND_Google`
+- dataset source: https://data.caltech.edu/records/mzrjq-6wc02
 
 The model is intentionally tiny (for speed), but the pipeline is the same
 one used for larger production-quality runs.
@@ -70,41 +70,52 @@ cmake --build build --target traincascade createsamples
 # 2) Prepare a quick workspace
 mkdir -p quickstart/{downloads,data,positives,negatives,classifier}
 
-# 3) Download public datasets
-curl -L "http://vis-www.cs.umass.edu/lfw/lfw-deepfunneled.tgz" \
-  -o quickstart/downloads/lfw-deepfunneled.tgz
-curl -L "https://data.caltech.edu/records/mzrjq-6wc02/files/101_ObjectCategories.tar.gz?download=1" \
-  -o quickstart/downloads/101_ObjectCategories.tar.gz
+# 3) Download and unpack Caltech-101
+curl -L "https://data.caltech.edu/records/mzrjq-6wc02/files/caltech-101.zip?download=1" \
+  -o quickstart/downloads/caltech-101.zip
+unzip -q quickstart/downloads/caltech-101.zip -d quickstart/data
+tar -xzf quickstart/data/caltech-101/101_ObjectCategories.tar.gz \
+  -C quickstart/data/caltech-101
 
-# 4) Unpack
-tar -xzf quickstart/downloads/lfw-deepfunneled.tgz -C quickstart/data
-tar -xzf quickstart/downloads/101_ObjectCategories.tar.gz -C quickstart/data
+# 4) Build positive/negative lists
+# NOTE: createsamples resolves image paths relative to info.dat location,
+# so positives are written as ../data/... relative paths.
+find quickstart/data/caltech-101/101_ObjectCategories/Faces_easy -name "*.jpg" | sort | head -n 400 \
+  | sed 's#^quickstart/#../#' > quickstart/positives/images_rel.txt
 
-# 5) Build positive/negative file lists (small subset for speed)
-find quickstart/data/lfw-deepfunneled -name "*.jpg" | sort | head -n 600 \
-  > quickstart/positives/images.txt
-find quickstart/data/101_ObjectCategories/BACKGROUND_Google -name "*.jpg" | sort | head -n 1200 \
-  > quickstart/negatives/bg.txt
+# NOTE: traincascade resolves bg entries as regular paths, so we store
+# absolute paths for negatives.
+find "$(pwd)/quickstart/data/caltech-101/101_ObjectCategories/BACKGROUND_Google" -name "*.jpg" | sort \
+  > quickstart/negatives/bg_abs.txt
 
-# LFW deepfunneled images are aligned 250x250 face crops.
-# Treat each full crop as one positive object.
-awk '{print $0 " 1 0 0 250 250"}' quickstart/positives/images.txt \
-  > quickstart/positives/info.dat
+# 5) Create info.dat (one object covering full image dimensions)
+python3 - <<'PY'
+from pathlib import Path
+from PIL import Image
+
+images = [line.strip() for line in Path("quickstart/positives/images_rel.txt").read_text().splitlines() if line.strip()]
+with Path("quickstart/positives/info.dat").open("w") as out:
+    for rel_path in images:
+        full_path = (Path("quickstart/positives") / rel_path).resolve()
+        with Image.open(full_path) as im:
+            w, h = im.size
+        out.write(f"{rel_path} 1 0 0 {w} {h}\n")
+PY
 
 # 6) Convert positives to .vec
 ./build/tools/createsamples/createsamples \
   -info quickstart/positives/info.dat \
-  -vec quickstart/positives/lfw_24x24.vec \
-  -num 550 \
+  -vec quickstart/positives/faces_easy_24x24.vec \
+  -num 380 \
   -w 24 -h 24
 
 # 7) Train a compact cascade (LBP is much faster than HAAR)
 ./build/traincascade/traincascade \
   -data quickstart/classifier \
-  -vec quickstart/positives/lfw_24x24.vec \
-  -bg quickstart/negatives/bg.txt \
-  -numPos 500 \
-  -numNeg 1000 \
+  -vec quickstart/positives/faces_easy_24x24.vec \
+  -bg quickstart/negatives/bg_abs.txt \
+  -numPos 350 \
+  -numNeg 400 \
   -numStages 4 \
   -featureType LBP \
   -w 24 -h 24 \
