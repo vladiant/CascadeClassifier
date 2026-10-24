@@ -486,6 +486,8 @@ def write_csv(results: list[BenchmarkResult], output_csv: Path) -> None:
 
 def main() -> int:
     args = parse_args()
+    if hasattr(cv2, "ocl"):
+        cv2.ocl.setUseOpenCL(False)
 
     samples = load_samples(
         info_file=args.info_file.resolve(),

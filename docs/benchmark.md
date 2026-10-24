@@ -51,14 +51,21 @@ python3 tools/detection/Python/benchmark.py \
   --yolo-class-id 0
 ```
 
-## Result table (fill from script output)
+## Result table (local sampled run)
+
+Local run details:
+
+* Date: 2026-10-24
+* Sample size: `25` positives + `25` negatives (`50` total)
+* YOLO input size: `320`
+* OpenCL: disabled (`cv2.ocl.setUseOpenCL(False)`) for stable CPU timing
 
 | Detector | Samples | TP | FP | FN | Precision | Recall | F1 | Mean IoU (TP) | Mean latency (ms) | P95 latency (ms) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| cascade-custom | - | - | - | - | - | - | - | - | - | - |
-| cascade-opencv | - | - | - | - | - | - | - | - | - | - |
-| hog-default-people | - | - | - | - | - | - | - | - | - | - |
-| yolo-onnx:\<model\> | - | - | - | - | - | - | - | - | - | - |
+| cascade-custom | 50 | 0 | 50 | 25 | 0.000 | 0.000 | 0.000 | 0.000 | 12357.69 | 13425.62 |
+| cascade-opencv | 50 | 0 | 26 | 25 | 0.000 | 0.000 | 0.000 | 0.000 | 25.92 | 68.91 |
+| hog-default-people | 50 | 1 | 9 | 24 | 0.100 | 0.040 | 0.057 | 0.554 | 17.72 | 65.63 |
+| yolo-onnx:yolov5n.onnx | 50 | 25 | 6 | 0 | 0.806 | 1.000 | 0.893 | 0.874 | 20.10 | 21.50 |
 
 ## Notes
 
