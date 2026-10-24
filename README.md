@@ -76,6 +76,7 @@ and method-level documentation.
 
 * [Cascade trainer parameters](docs/traincascade_params.md)
 * [createsamples parameters](docs/createsamples_params.md)
+* [Benchmarking Cascade vs OpenCV/HOG/YOLO](docs/benchmark.md)
 * [Useful links and references](docs/links.md)
 * [Test-suite README](traincascade/test/README.md)
 
