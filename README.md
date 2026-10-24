@@ -81,14 +81,14 @@ and method-level documentation.
 
 ## Results
 
-The detection workflow is demonstrated on the bundled barcode sample. The raw image is shown before the ROI overlay, followed by the annotated result that highlights the detected area.
+The detection workflow is demonstrated on a public sample from the COCO 2017 validation set (image `000000000285.jpg`). The raw image is shown before the ROI overlay, followed by the annotated result that highlights the detected area.
 
 <p align="center">
-  <img src="docs/results/barcode-before.png" alt="Barcode sample before detection" width="420" />
-  <img src="docs/results/barcode-after.png" alt="Barcode sample after detection" width="420" />
+  <img src="docs/results/bear-before.png" alt="COCO 2017 validation sample before detection" width="420" />
+  <img src="docs/results/bear-after.png" alt="COCO 2017 validation sample after detection" width="420" />
 </p>
 
-The post-processing pass marks the barcode with a cyan bounding box and a short label so the localized region of interest is easy to inspect in a single glance.
+The post-processing pass marks the selected region with a cyan bounding box and a short label so the localized region of interest is easy to inspect in a single glance. Source dataset: COCO 2017 validation set, publicly available from the COCO dataset archive.
 
 ### Timing benchmark
 
