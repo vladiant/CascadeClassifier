@@ -25,6 +25,7 @@ releases. It contains:
 | Path | Contents |
 | ---- | -------- |
 | `traincascade/`          | Cascade trainer library (`lib/`), `traincascade` executable and unit tests (`test/`). |
+| `traincascade/python/`   | `pybind11` module source that exposes the trainer as `pytraincascade`. |
 | `traincascade/lib/include/` | Public headers, fully Doxygen-annotated. |
 | `traincascade/lib/src/`     | Implementation; the `o_*.cpp` files are extracted from OpenCV's legacy ML module and retain their original copyright headers. |
 | `tools/createsamples/`   | `opencv_createsamples` — generates `.vec` files of positives. |
@@ -43,6 +44,30 @@ imgcodecs, ml, objdetect, highgui).
 ```sh
 cmake -S . -B build -G Ninja
 cmake --build build
+```
+
+### Optional: Python bindings (`pybind11`)
+
+The trainer can also be built as a Python extension module:
+
+```sh
+cmake -S . -B build -G Ninja -DTRAINCASCADE_BUILD_PYTHON_BINDINGS=ON -Dpybind11_DIR="$(python3 -m pybind11 --cmakedir)"
+cmake --build build --target pytraincascade
+```
+
+Then import it from Python (module lives in the build tree):
+
+```python
+import pytraincascade as tc
+
+opts = tc.TrainerOptions()
+opts.data_dir = "classifier/"
+opts.vec_file = "positives.vec"
+opts.bg_file = "bg.txt"
+opts.feature_type = tc.FeatureType.HAAR
+opts.haar_mode = tc.HaarMode.BASIC
+
+ok = tc.train(opts)
 ```
 
 A coverage-enabled build is also available under `build-coverage/`.

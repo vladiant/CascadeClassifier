@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(traincascade LANGUAGES CXX)
 
 find_package(OpenCV REQUIRED)
+option(TRAINCASCADE_BUILD_PYTHON_BINDINGS "Build pybind11 bindings for the trainer" OFF)
 
 # Library
 add_library(
@@ -52,6 +53,7 @@ set_target_properties(
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED YES
         CXX_EXTENSIONS NO
+        POSITION_INDEPENDENT_CODE ON
 )
 
 target_compile_options(
@@ -221,3 +223,40 @@ target_compile_definitions(
 )
 
 add_test(NAME test_traincascade COMMAND test_traincascade)
+
+if(TRAINCASCADE_BUILD_PYTHON_BINDINGS)
+    find_package(pybind11 CONFIG REQUIRED)
+
+    pybind11_add_module(
+        pytraincascade
+        python/pytraincascade.cpp
+    )
+
+    set_target_properties(
+        pytraincascade
+        PROPERTIES
+            CXX_STANDARD 17
+            CXX_STANDARD_REQUIRED YES
+            CXX_EXTENSIONS NO
+    )
+
+    target_compile_options(
+        pytraincascade
+        PRIVATE
+             $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -Wpedantic -Werror>
+    )
+
+    target_include_directories(
+        pytraincascade
+        PRIVATE
+            ${OpenCV_INCLUDE_DIRS}
+            lib/include/
+    )
+
+    target_link_libraries(
+        pytraincascade
+        PRIVATE
+            TrainCascadeLib
+    )
+endif()
