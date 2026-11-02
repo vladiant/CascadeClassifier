@@ -33,6 +33,7 @@ releases. It contains:
 | `tools/detection/Python/`| Equivalent Python detection sample. |
 | `tools/visualisation/`   | `opencv_visualisation` — visualises the stages of a trained cascade. |
 | `docs/`                  | Markdown documentation of CLI parameters. |
+| `models/`                | Pre-trained example cascade XMLs (face, eye, full body) sourced from OpenCV. |
 | `external/`              | CMake helpers (e.g. `FindOpenCV.cmake`). |
 
 ## Building
@@ -78,6 +79,17 @@ and method-level documentation.
 * [createsamples parameters](docs/createsamples_params.md)
 * [Useful links and references](docs/links.md)
 * [Test-suite README](traincascade/test/README.md)
+
+## Pre-trained example cascades
+
+The repository includes pre-trained XML cascades under `models/`:
+
+* `haarcascade_frontalface_default.xml`
+* `haarcascade_eye.xml`
+* `haarcascade_fullbody.xml`
+
+These files are sourced from OpenCV's `data/haarcascades` and keep their
+original embedded license headers.
 
 ## License
 
